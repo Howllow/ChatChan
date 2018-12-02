@@ -58,17 +58,34 @@ class Room(Cmd_Handler):
     def handle_logout(self):
         raise EndSession
 
+class WaitingRoom(Room):
+    """
+    Stay here after login and before the chat
+    """
 
-class LoginHere(Room):
+class Login(Cmd_Handler):
     """
-    stay here while login
+    deal with login
     """
+    def login(self, session, input):
+        id_and_pas = input.split(":", 1)[1]
+        id = id_and_pas.split(" ", 1)[0]
+        pas = id_and_pas.split(" ", 1)[1]
+        """
+        search id in database
+        if there isn't this id, return 'Fail'
+        if there is, compare password
+        """
+        session.push('Login Successful')
+
+        return ('Login Successful')
 
 class ChatRoom(Room):
 
-class LogoutHere(Room):
+class Logout:
 
 class Session(async_chat):
+
 
 class Chat_Server(dispatcher):
     def __init__(self, host, port):
