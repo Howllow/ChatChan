@@ -9,9 +9,26 @@ class Cmd_Handler:
     """
     class to handle different commands
     """
-    def undefined_cmd(self, cmd):
+    def undefined_cmd(self, session, cmd):
+        session.push('Command is Undefined! : %s\n' % cmd)
 
-    def handle_cmd(self, session, cmd):
+    def handle_cmd(self, session, input):
+        'check if it is an empty string'
+        if not input.strip():
+            return
+        input_parts = input.split(':', 1)
+        cmd = input_parts[0]
+        try:
+            info = input_parts[1]
+        except(IndexError):
+            info = ''
+        func = getattr(self, 'handle_'.join(cmd), None)
+        try:
+            func(session, info)
+        except(TypeError):
+            self.undefined_cmd(session, cmd)
+
+
 
 class EndSession:
     """
@@ -34,7 +51,7 @@ class Room(Cmd_Handler):
         self.sessions.remove(session)
 
     def broadcast(self, message):
-        'broadcast the massage to all sessions in the room'
+        'broadcast the message to all sessions in the room'
         for session in self.sessions:
             session.push(message)
 
@@ -43,6 +60,9 @@ class Room(Cmd_Handler):
 
 
 class LoginHere(Room):
+    """
+    stay here while login
+    """
 
 class ChatRoom(Room):
 
@@ -51,16 +71,16 @@ class LogoutHere(Room):
 class Session(async_chat):
 
 class Chat_Server(dispatcher):
-    def __init__(self):
+    def __init__(self, host, port):
         dispatcher.__init__(self)
         self.create_socket(self, socket.AF_INET, socket.SOCK_STREAM)
         self.set_reuse_addr(self)
-        self.bind((HOST, PORT))
+        self.bind((host, port))
         self.listen(self, 5)
         self.users = {}
 
 if __name__ == '__main__':
-	s = Chat_Server(PORT)
+    s = Chat_Server(PORT)
 	try:
 		asyncore.loop()
 	except KeyboardInterrupt:
