@@ -1,107 +1,91 @@
-import socket, asyncore
-from asyncore import dispatcher
-from asynchat import async_chat
+import socketserver
+import time
+import threading
+import db
 
-PORT = 3154
-HOST = '127.0.0.1'
+GroupLst = []
+ConnLst = []
 
-class Cmd_Handler:
-    """
-    class to handle different commands
-    """
-    def undefined_cmd(self, session, cmd):
-        session.push('Command is Undefined! : %s\n' % cmd)
+class Connector:
+    def __init__(self, username, AdPt, ConnObj):
+        self.username = username
+        self.AdPt = AdPt
+        self.ConnObj = ConnObj
 
-    def handle_cmd(self, session, input):
-        'check if it is an empty string'
-        if not input.strip():
-            return
-        input_parts = input.split(':', 1)
-        cmd = input_parts[0]
-        try:
-            info = input_parts[1]
-        except(IndexError):
-            info = ''
-        func = getattr(self, 'handle_'.join(cmd), None)
-        try:
-            func(session, info)
-        except(TypeError):
-            self.undefined_cmd(session, cmd)
+class Group:
+    def __init__(self, owner, name):
+        self.owner = owner
+        self.name = 'group ' + name
+        self.createTime = time.time()
+        self.members = [owner]
+        self.id = 'Group' + str(len(GroupLst))
 
+class Handler(socketserver.BaseRequestHandler):
+    def do_register(self, dataDict):
+        username = dataDict['username']
+        password = dataDict['password']
+        checkflag = True
+        'Check if username has been existed' \
+        'If not, record the username and password'
+        if checkflag == True:
+            return 'ok'
+        else:
+            return 'bad'
 
+    def do_login(self, dataDict):
+        username = dataDict['username']
+        password = dataDict['password']
+        checkflag = 'True'
+        'Check if they are correct, then change checkflag'
+        if checkflag == 'True':
+            ConnLst.append(Connector(username, self.client_address, self.request))
+            return 'ok'
+        elif checkflag == 'PassWrong':
+            return 'PassWrong'
+        else:
+            return 'Nonexistent'
 
-class EndSession:
-    """
-    do something when a session is ending
-    """
+    def do_makegrp(self, dataDict):
+        checkflag = True
+        'Check if the Group has been existed' \
+        'If not, record the username and password'
+        if checkflag:
+            grp = Group(dataDict['username'], dataDict['grpname'])
+            GroupLst.append(grp)
+            return ('ok')
+        else:
+            return ('bad')
 
-class Room(Cmd_Handler):
-    """
-    general class of ROOM
-    """
-    def __init__(self):
-        self.sessions = []
+    def do_prchat(self, dataDict):
 
-    def add(self, session):
-        'add a session to the room'
-        self.sessions.append(session)
+    def do_grpchat(self, dataDict):
 
-    def remove(self, session):
-        'remove a session from the room'
-        self.sessions.remove(session)
+    def do_grpmember
 
-    def broadcast(self, message):
-        'broadcast the message to all sessions in the room'
-        for session in self.sessions:
-            session.push(message)
+    def do_useronline
 
-    def handle_logout(self):
-        raise EndSession
-
-class WaitingRoom(Room):
-    """
-    Stay here after login and before the chat
-    """
-
-class Login(Cmd_Handler):
-    """
-    deal with login
-    """
-    def login(self, session, input):
-        id_and_pas = input.split(":", 1)[1]
-        id = id_and_pas.split(" ", 1)[0]
-        pas = id_and_pas.split(" ", 1)[1]
-        """
-        search id in database
-        if there isn't this id, return 'Fail'
-        if there is, compare password
-        """
-        session.push('Login Successful')
-
-        return ('Login Successful')
-
-class ChatRoom(Room):
-
-class Logout:
-
-class Session(async_chat):
+    def find_meth(self, dataDict):
+        return getattr(self, 'do_' + dataDict['type'], None)
 
 
-class Chat_Server(dispatcher):
-    def __init__(self, host, port):
-        dispatcher.__init__(self)
-        self.create_socket(self, socket.AF_INET, socket.SOCK_STREAM)
-        self.set_reuse_addr(self)
-        self.bind((host, port))
-        self.listen(self, 5)
-        self.users = {}
 
-if __name__ == '__main__':
-    s = Chat_Server(PORT)
-	try:
-		asyncore.loop()
-	except KeyboardInterrupt:
-		print
+    def handle(self):
+        print('Got connection from', self.client_address)
+        global GroupLst
+        global ConnLst
+        conn = self.request
+        ret = 'ok'
+        while True:
+            data = conn.recv(1024).decode('utf-8')
+            dataDict = eval(data)
+            if not data or type(dataDict) != 'dict':
+                continue
+            meth = self.find_meth(dataDict)
+            ret = meth(dataDict)
+            conn.sendall(ret.encode('utf-8'))
+
+
+
 
 
 
