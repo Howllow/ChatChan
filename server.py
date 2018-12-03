@@ -1,16 +1,17 @@
 import socketserver
 import time
-import threading
-import db
 
 GroupLst = []
 ConnLst = []
+addr = '127.0.0.1'
+port = 6666
 
 class Connector:
     def __init__(self, username, AdPt, ConnObj):
         self.username = username
         self.AdPt = AdPt
         self.ConnObj = ConnObj
+
 
 class Group:
     def __init__(self, owner, name):
@@ -20,7 +21,30 @@ class Group:
         self.members = [owner]
         self.id = 'Group' + str(len(GroupLst))
 
+
 class Handler(socketserver.BaseRequestHandler):
+    def check_in_grp(self, dataDict):
+        grpname = dataDict['grpname']
+        username = dataDict['username']
+        hasGrp = False
+        inGrp = False
+        mygrp = None
+        for grp in GroupLst:
+            if grpname == grp.name:
+                hasGrp = True
+                for member in grp.members:
+                    if member.username == username:
+                        inGrp = True
+                        mygrp = grp
+                        break
+                break
+        if not hasGrp:
+            return 'NoGrp'
+        elif not inGrp:
+            return 'NotInGrp'
+        else: return mygrp
+
+
     def do_register(self, dataDict):
         username = dataDict['username']
         password = dataDict['password']
@@ -31,6 +55,7 @@ class Handler(socketserver.BaseRequestHandler):
             return 'ok'
         else:
             return 'bad'
+
 
     def do_login(self, dataDict):
         username = dataDict['username']
@@ -45,24 +70,90 @@ class Handler(socketserver.BaseRequestHandler):
         else:
             return 'Nonexistent'
 
+
     def do_makegrp(self, dataDict):
         checkflag = True
+        username = dataDict['username']
         'Check if the Group has been existed' \
         'If not, record the username and password'
         if checkflag:
-            grp = Group(dataDict['username'], dataDict['grpname'])
+            grp = Group(Connector(username, self.client_address, self.request), dataDict['grpname'])
             GroupLst.append(grp)
             return ('ok')
         else:
             return ('bad')
 
+
     def do_prchat(self, dataDict):
+        target = dataDict['chatwith']
+        message = dataDict['message']
+        username = dataDict['username']
+        for connects in ConnLst:
+            if connects.username == target:
+                tobj = connects.ConnObj
+                tobj.sendall(('msg from ' + username + " " + time.time() + '\n' + message).encode('utf-8'))
+                return 'ok'
+        return 'bad'
+
+
+    def do_entergrp(self, dataDict):
+        grpname = dataDict['grpname']
+        username = dataDict['username']
+        for grp in GroupLst:
+            if grpname == grp.name:
+                'maybe some authority check here'
+                grp.members.append(Connector(username, self.client_address, self.request))
+                return 'ok'
+        return 'bad'
+
 
     def do_grpchat(self, dataDict):
+        grpname = dataDict['grpname']
+        username = dataDict['username']
+        message = ("msg from GROUP " + grpname + " " + time.time() + '\n' + dataDict['message']).encode('utf-8')
+        flag = self.check_in_grp(dataDict)
+        if type(flag) == Group:
+            mygrp = flag
+            for member in mygrp.members:
+                if member.username != username:
+                    member.ConnObj.sendall(message)
+            return 'ok'
+        else:
+            return flag
 
-    def do_grpmember
 
-    def do_useronline
+    def do_grpmember(self, dataDict):
+        flag = self.check_in_grp(dataDict)
+        conn = self.request
+        if type(flag) == Group:
+            mygrp = flag
+            str = 'members in GROUP ' + mygrp.name + ':\n'
+            conn.sendall(str.encode('utf-8'))
+            for member in mygrp.members:
+                conn.sendall((member.username + "\n").encode('utf-8'))
+            return 'ok'
+        else:
+            return flag
+
+
+    def do_useronline(self, dataDict):
+        for user in ConnLst:
+            self.request.sendall((user.username + "\n").encode('utf-8'))
+        return 'ok'
+
+
+    def do_logout(selfs, dataDict):
+        username = dataDict['username']
+        for grp in GroupLst:
+            for member in grp.members:
+                if member.username == username:
+                    grp.members.remove(member)
+                    break
+        for conns in ConnLst:
+            if conns.username == username:
+                ConnLst.remove(conns)
+                break
+
 
     def find_meth(self, dataDict):
         return getattr(self, 'do_' + dataDict['type'], None)
@@ -74,7 +165,6 @@ class Handler(socketserver.BaseRequestHandler):
         global GroupLst
         global ConnLst
         conn = self.request
-        ret = 'ok'
         while True:
             data = conn.recv(1024).decode('utf-8')
             dataDict = eval(data)
@@ -84,7 +174,10 @@ class Handler(socketserver.BaseRequestHandler):
             ret = meth(dataDict)
             conn.sendall(ret.encode('utf-8'))
 
-
+if __name__ == '__main__':
+    server = socketserver.ThreadingTCPServer((addr, port), Handler)
+    print('waiting for connection...')
+    server.serve_forever()
 
 
 
