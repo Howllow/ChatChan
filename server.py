@@ -1,10 +1,12 @@
 import socketserver
 import time
+import threading
 
 GroupLst = []
 ConnLst = []
-addr = '127.0.0.1'
-port = 6666
+host = '127.0.0.1'
+port = 6663
+addr = (host, port)
 
 class Connector:
     def __init__(self, username, AdPt, ConnObj):
@@ -23,6 +25,13 @@ class Group:
 
 
 class Handler(socketserver.BaseRequestHandler):
+    def CheckDeadConn(self):
+        if len(ConnLst) > 0:
+            for conn in ConnLst:
+                print (conn.ConnObj())
+                if conn.ConnObj.fd == -1:
+                    ConnLst.remove(conn)
+
     def check_in_grp(self, dataDict):
         grpname = dataDict['grpname']
         username = dataDict['username']
@@ -58,10 +67,14 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def do_login(self, dataDict):
+        self.CheckDeadConn()
         username = dataDict['username']
         password = dataDict['password']
         checkflag = 'True'
         'Check if they are correct, then change checkflag'
+        for usr in ConnLst:
+            if (usr.username == username):
+                return 'Online'
         if checkflag == 'True':
             ConnLst.append(Connector(username, self.client_address, self.request))
             return 'ok'
@@ -85,6 +98,7 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def do_prchat(self, dataDict):
+        self.CheckDeadConn()
         target = dataDict['chatwith']
         message = dataDict['message']
         username = dataDict['username']
@@ -108,6 +122,7 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def do_grpchat(self, dataDict):
+        self.CheckDeadConn()
         grpname = dataDict['grpname']
         username = dataDict['username']
         message = ("msg from GROUP " + grpname + " " + time.time() + '\n' + dataDict['message']).encode('utf-8')
@@ -137,6 +152,7 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def do_useronline(self, dataDict):
+        self.CheckDeadConn()
         for user in ConnLst:
             self.request.sendall((user.username + "\n").encode('utf-8'))
         return 'ok'
@@ -156,6 +172,7 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def find_meth(self, dataDict):
+        print('finding method')
         return getattr(self, 'do_' + dataDict['type'], None)
 
 
@@ -167,15 +184,16 @@ class Handler(socketserver.BaseRequestHandler):
         conn = self.request
         while True:
             data = conn.recv(1024).decode('utf-8')
+            print(data)
             dataDict = eval(data)
-            if not data or type(dataDict) != 'dict':
+            if not data or type(dataDict) != dict:
                 continue
             meth = self.find_meth(dataDict)
             ret = meth(dataDict)
             conn.sendall(ret.encode('utf-8'))
 
 if __name__ == '__main__':
-    server = socketserver.ThreadingTCPServer((addr, port), Handler)
+    server = socketserver.ThreadingTCPServer(addr, Handler)
     print('waiting for connection...')
     server.serve_forever()
 
