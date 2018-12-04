@@ -37,7 +37,7 @@ def register(username, password):
     dataDict = dict(username = username, password = password, type = 'register')
     sendDict(dataDict)
     ret = getResponse()
-    if ret == 'ok':
+    if ret == 'lgok':
         print('Register Successful!\n')
         return 0
     else:
@@ -52,7 +52,7 @@ def login(username, password):
     sendDict(dataDict)
     ret = getResponse()
     while True:
-        if ret == 'ok':
+        if ret == 'lgok':
             print('Login Successful!\nChatChanの世界にようこそ！！\n')
             myname = username
             mypass = password
@@ -72,7 +72,7 @@ def useronline():
     sendDict(dataDict)
     while True:
         data = getResponse()
-        if (data == 'ok'):
+        if (data == 'uook'):
             break
         print(data)
     print ("That's all!!")
@@ -85,7 +85,7 @@ def prchat(chatwith, message):
     ret = getResponse()
     print(ret)
     ret = getResponse()
-    if ret == 'bad':
+    if ret == 'pcbad':
         print("Failed. Maybe target doesn't exist\n")
 
 

@@ -60,9 +60,9 @@ class Handler(socketserver.BaseRequestHandler):
         'Check if username has been existed' \
         'If not, record the username and password'
         if checkflag == True:
-            return 'ok'
+            return 'rgok'
         else:
-            return 'bad'
+            return 'rgbad'
 
 
     def do_login(self, dataDict):
@@ -76,7 +76,7 @@ class Handler(socketserver.BaseRequestHandler):
                 return 'Online'
         if checkflag == 'True':
             ConnLst.append(Connector(username, self.client_address, self.request))
-            return 'ok'
+            return 'lgok'
         elif checkflag == 'PassWrong':
             return 'PassWrong'
         else:
@@ -91,9 +91,9 @@ class Handler(socketserver.BaseRequestHandler):
         if checkflag:
             grp = Group(Connector(username, self.client_address, self.request), dataDict['grpname'])
             GroupLst.append(grp)
-            return ('ok')
+            return ('mgok')
         else:
-            return ('bad')
+            return ('mgbad')
 
 
     def do_prchat(self, dataDict):
@@ -105,7 +105,7 @@ class Handler(socketserver.BaseRequestHandler):
             if connects.username == target:
                 tobj = connects.ConnObj
                 tobj.sendall(('msg from ' + username + " " + str(time.time()) + '\n' + message).encode('utf-8'))
-                return 'ok'
+                return 'pcok'
         return 'bad'
 
 
@@ -116,8 +116,8 @@ class Handler(socketserver.BaseRequestHandler):
             if grpname == grp.name:
                 'maybe some authority check here'
                 grp.members.append(Connector(username, self.client_address, self.request))
-                return 'ok'
-        return 'bad'
+                return 'egok'
+        return 'egbad'
 
 
     def do_grpchat(self, dataDict):
@@ -131,7 +131,7 @@ class Handler(socketserver.BaseRequestHandler):
             for member in mygrp.members:
                 if member.username != username:
                     member.ConnObj.sendall(message)
-            return 'ok'
+            return 'gcok'
         else:
             return flag
 
@@ -145,7 +145,7 @@ class Handler(socketserver.BaseRequestHandler):
             conn.sendall(str.encode('utf-8'))
             for member in mygrp.members:
                 conn.sendall((member.username + "\n").encode('utf-8'))
-            return 'ok'
+            return 'gmok'
         else:
             return flag
 
@@ -154,7 +154,7 @@ class Handler(socketserver.BaseRequestHandler):
         self.CheckDeadConn()
         for user in ConnLst:
             self.request.sendall((user.username + "\n").encode('utf-8'))
-        return 'ok'
+        return 'uook'
 
 
     def do_logout(selfs, dataDict):
