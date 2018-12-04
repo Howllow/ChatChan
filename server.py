@@ -28,8 +28,7 @@ class Handler(socketserver.BaseRequestHandler):
     def CheckDeadConn(self):
         if len(ConnLst) > 0:
             for conn in ConnLst:
-                print (conn.ConnObj())
-                if conn.ConnObj.fd == -1:
+                if conn.ConnObj.fileno() == -1:
                     ConnLst.remove(conn)
 
     def check_in_grp(self, dataDict):
@@ -105,7 +104,7 @@ class Handler(socketserver.BaseRequestHandler):
         for connects in ConnLst:
             if connects.username == target:
                 tobj = connects.ConnObj
-                tobj.sendall(('msg from ' + username + " " + time.time() + '\n' + message).encode('utf-8'))
+                tobj.sendall(('msg from ' + username + " " + str(time.time()) + '\n' + message).encode('utf-8'))
                 return 'ok'
         return 'bad'
 
@@ -172,7 +171,6 @@ class Handler(socketserver.BaseRequestHandler):
 
 
     def find_meth(self, dataDict):
-        print('finding method')
         return getattr(self, 'do_' + dataDict['type'], None)
 
 
@@ -190,7 +188,9 @@ class Handler(socketserver.BaseRequestHandler):
                 continue
             meth = self.find_meth(dataDict)
             ret = meth(dataDict)
+            print (ret)
             conn.sendall(ret.encode('utf-8'))
+
 
 if __name__ == '__main__':
     server = socketserver.ThreadingTCPServer(addr, Handler)
