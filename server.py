@@ -1,11 +1,10 @@
 import socketserver
 import time
-import threading
 
 GroupLst = []
 ConnLst = []
 host = '127.0.0.1'
-port = 6663
+port = 6660
 addr = (host, port)
 
 class Connector:
@@ -99,14 +98,12 @@ class Handler(socketserver.BaseRequestHandler):
     def do_prchat(self, dataDict):
         self.CheckDeadConn()
         target = dataDict['chatwith']
-        message = dataDict['message']
-        username = dataDict['username']
         for connects in ConnLst:
             if connects.username == target:
                 tobj = connects.ConnObj
-                tobj.sendall(('msg from ' + username + " " + str(time.time()) + '\n' + message).encode('utf-8'))
+                tobj.sendall(str(dataDict).encode('utf-8'))
                 return 'pcok'
-        return 'bad'
+        return 'pcbad'
 
 
     def do_entergrp(self, dataDict):
@@ -122,29 +119,30 @@ class Handler(socketserver.BaseRequestHandler):
 
     def do_grpchat(self, dataDict):
         self.CheckDeadConn()
-        grpname = dataDict['grpname']
         username = dataDict['username']
-        message = ("msg from GROUP " + grpname + " " + time.time() + '\n' + dataDict['message']).encode('utf-8')
         flag = self.check_in_grp(dataDict)
         if type(flag) == Group:
             mygrp = flag
             for member in mygrp.members:
                 if member.username != username:
-                    member.ConnObj.sendall(message)
+                    member.ConnObj.sendall(str(dataDict).encode('utf-8'))
             return 'gcok'
         else:
             return flag
 
 
     def do_grpmember(self, dataDict):
+        self.CheckDeadConn()
         flag = self.check_in_grp(dataDict)
         conn = self.request
         if type(flag) == Group:
             mygrp = flag
             str = 'members in GROUP ' + mygrp.name + ':\n'
-            conn.sendall(str.encode('utf-8'))
             for member in mygrp.members:
-                conn.sendall((member.username + "\n").encode('utf-8'))
+                str += member.username + "\n"
+            mydict = dataDict
+            mydict['listmsg'] = str
+            self.request.sendall(str(mydict).encode('utf-8'))
             return 'gmok'
         else:
             return flag
@@ -152,8 +150,12 @@ class Handler(socketserver.BaseRequestHandler):
 
     def do_useronline(self, dataDict):
         self.CheckDeadConn()
+        alluser = "Users Online:\n"
         for user in ConnLst:
-            self.request.sendall((user.username + "\n").encode('utf-8'))
+            alluser += user.username + "\n"
+        mydict = dataDict
+        mydict['listmsg'] = alluser
+        self.request.sendall(str(mydict).encode('utf-8'))
         return 'uook'
 
 
@@ -188,7 +190,7 @@ class Handler(socketserver.BaseRequestHandler):
                 continue
             meth = self.find_meth(dataDict)
             ret = meth(dataDict)
-            print (ret)
+            print ("ret: %s" % ret)
             conn.sendall(ret.encode('utf-8'))
 
 

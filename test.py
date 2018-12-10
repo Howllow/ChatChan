@@ -1,16 +1,14 @@
 import socket
-import sys
-import signal
+import threading
 
 host = "127.0.0.1"
-port = 6663
+port = 6660
 addr = (host, port)
 myname = 'howllow'
 mypass = '123'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect(addr)
-print(sock.fileno())
 
 def sendDict(dict):
     global sock
@@ -37,7 +35,7 @@ def register(username, password):
     dataDict = dict(username = username, password = password, type = 'register')
     sendDict(dataDict)
     ret = getResponse()
-    if ret == 'lgok':
+    if ret == 'rgok':
         print('Register Successful!\n')
         return 0
     else:
@@ -67,26 +65,83 @@ def login(username, password):
             print('User nonexistent')
 
 
-def useronline():
-    dataDict = dict(username = myname, password = mypass, type = 'useronline')
-    sendDict(dataDict)
-    while True:
-        data = getResponse()
-        if (data == 'uook'):
-            break
-        print(data)
-    print ("That's all!!")
-    return 0
+class RecvThread(threading.Thread):
+    def run(self):
+        while True:
+            data = getResponse()
+            while data.strip():
+
+                if data == 'uook':
+                    print("That's all!!")
+                    break
+
+                if data == 'mgok':
+                    print("Group has been successfully made!!")
+                    break
+
+                if data == 'mgbad':
+                    print("Group has existed!!")
+                    break
+
+                if data == 'pcbad':
+                    print("Sending message failed. Maybe target doesn't exist.")
+                    break
+
+                if data == 'NoGrp':
+                    print("Group doesn't exist.")
+                    break
+
+                if data == 'NotInGrp':
+                    print("You are not in the group.")
+                    break
+
+                if data == 'egok':
+                    print("Successfully entered!! Let's chat!!")
+                    break
+
+                if data == 'egbad':
+                    print("Entering failed. Maybe group doesn't exist.")
+                    break
+
+                if data == 'gmok':
+                    print("That's all!!")
+                    break
+
+                dataDict = eval(data)
+                if type(dataDict) == dict:
+                    if dataDict['type'] == 'useronline':
+                        print(dataDict['listmsg'])
+
+                    if dataDict['type'] == 'grpmember':
+                        print(dataDict['listmsg'])
+
+                    if dataDict['type'] == 'prchat':
+                        print(dataDict['message'])
+
+                    if dataDict['type'] == 'grpchat':
+                        print(dataDict['message'])
+                    break
 
 
-def prchat(chatwith, message):
-    dataDict = dict(username = myname, password = mypass, type = 'prchat', chatwith = chatwith, message = message)
-    sendDict(dataDict)
-    ret = getResponse()
-    print(ret)
-    ret = getResponse()
-    if ret == 'pcbad':
-        print("Failed. Maybe target doesn't exist\n")
+class SendThread(threading.Thread):
+    global myname
+    global mypass
+    def run(self):
+        print("Please input your request:")
+        while True:
+            req = input()
+            if req == 'prchat':
+                msg = input("Who you wanna chat with:")
+                chatwith = input("What you wanna say:")
+                dataDict = dict(type = req, message = msg, chatwith = chatwith, username = myname, password = mypass)
+                sendDict(dataDict)
+
+            if req == 'useronline':
+                dataDict = dict(username = myname, password = mypass, type = 'useronline')
+                sendDict(dataDict)
+
+
+
 
 
 if __name__ == '__main__':
@@ -95,6 +150,11 @@ if __name__ == '__main__':
     loginfo = getLogInfo()
     login(loginfo[0], loginfo[1])
 
-    chatwith = input('Who you want to chat with:')
-    message = input('What you wanna say:')
-    prchat(chatwith, message)
+    mysend = SendThread()
+    myrecv = RecvThread()
+    mysend.start()
+    myrecv.start()
+    mysend.join()
+    myrecv.join()
+
+
