@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <title>chat</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-image: url(../img/bg.jpg);
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            
+        }
+
+        .container {
+            border: 1px solid;
+            border-color: bisque;
+            border-radius: 25px;
+            box-shadow: 2px 1px 1px gray;
+            width: 450px;
+            height: 280px;
+            background-color: aquamarine;
+            margin: 0 auto;
+            margin-top: 10px;
+            background: rgba(41, 146, 231, 0.350)
+        }
+
+        form {
+            margin-top: 30px;
+        }
+
+        label {
+            color: coral;
+        }
+
+        .btn {
+            margin-top: 30px;
+            display: block;
+            float: right;
+            width: 100px;
+            margin-left: 10px;
+        }
+
+        img {
+            display: block;
+            width: 120px;
+            margin: 0 auto;
+            margin-top: 10%;
+            border-radius: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <img src="../img/chat.png" alt="">
+    <div class="container">
+        <div style="margin-top: 30px;">
+            <div class="form-group">
+                <label for="teacherId">User name</label>
+                <input class="form-control" id="teacherId" placeholder="Enter user name ">
+            </div>
+            <div class="form-group ">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password ">
+            </div>
+            <label>
+                <input type="checkbox"> Remember me
+            </label>
+            <button class="btn btn-default" id="login">Sign in</button>
+            <button class="btn btn-default" id="signup">Sign up</button>
+        </div>
+
+    </div>
+
+    <script>
+        $('#signup').click(function(){
+            window.location.href = './signup.html';
+        })
+        $('#login').click(function () {
+            var _teacherId = $('#teacherId').val();
+            var _password = $('#password').val();
+            console.log(_teacherId, _password);
+            $.ajax({
+                type: 'POST',
+                url: 'http://39.105.109.207:5000/teacher/login',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ teacherId: _teacherId, password: _password }),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 1) {
+                        window.location.href = './register.html?teacherid='+_teacherId;
+                    }
+                    else {
+                        alert('账号或密码错误！');
+                    }
+                }
+            })
+        })
+        $('body').keydown(function(e) {
+            if(e.keyCode=='13') {
+                $('#login').click();
+            }
+        })
+    </script>
+</body>
+
+</html>
