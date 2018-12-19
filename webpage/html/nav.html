@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Chat</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .nav-logo {
+            height: 60px;
+            width: 80px;
+            margin-left: 10px;
+        }
+        .container-nav {
+            display: flex;
+            width: 100%;
+            height: 60px;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container-nav">
+            <img src="../img/chat.png" class="nav-logo" alt="">
+            <div class="menu">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Chatroom</a></li>
+                    <li><a href="#">Find</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            Me
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">info</a></li>
+                            <li><a href="#">setting</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</body>
+</html>
