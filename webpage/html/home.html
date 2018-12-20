@@ -28,7 +28,37 @@
             justify-content: flex-start;
             align-items: center;
         }
-        
+        .sidebar{
+            border: 1px solid;
+            border-color: lightgray;
+            border-radius: 5px;
+            box-shadow: 1px 1px 1px gray;
+            height: 100%;
+        }
+        .chat-panel{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid;
+            border-color: lightgray;
+            border-radius: 5px;
+            box-shadow: 1px 1px 1px gray;
+        }
+        .room-info{
+            height: 10%;    
+            border: 1px solid;
+            border-color: lightgray;
+        }
+        .room-msg{
+            height: 70%;
+            border: 1px solid;
+            border-color: lightgray;
+        }
+        .room-inputbox{
+            height: 20%;
+            border: 1px solid;
+            border-color: lightgray;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +86,32 @@
             </div>
         </div>
     </nav>
-
+    <div class="sidebar col-md-2">
+        <div class="list-group">
+            <a href="#" class="list-group-item active">menu1</a>
+            <a href="#" class="list-group-item">menu2</a>
+            <a href="#" class="list-group-item">menu3</a>
+            <a href="#" class="list-group-item">menu4</a>
+            <a href="#" class="list-group-item">menu5</a>
+            <a href="#" class="list-group-item">menu4</a>
+            <a href="#" class="list-group-item">menu5</a>
+        </div>
+    </div>
+    <div class="chat-panel col-md-10">
+        <div class="room-info">
+            room info
+        </div>
+        <div class="room-msg">
+            msg
+        </div>
+        <div class="room-inputbox">
+            <form role="form">
+                <div class="form-group">
+                    <textarea class="form-control" rows="5"></textarea>
+                </div>
+            </form>
+        </div>
+            
+    </div>
 </body>
 </html>

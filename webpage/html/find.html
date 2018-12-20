@@ -28,7 +28,23 @@
             justify-content: flex-start;
             align-items: center;
         }
-        
+        .search-box{
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            margin: 0 auto;
+            margin-top:30px;
+            width: 50%;
+            height: 40px;
+        }
+        .form-group{
+            width: 80%;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .form-control{
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -56,6 +72,16 @@
             </div>
         </div>
     </nav>
-
+    <form role="form" >
+        <div class="search-box">
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="search...">
+            </div>
+            <button type="button" class="btn btn-info btn-lg">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
+            </button>
+        </div>
+    </form>
+    
 </body>
 </html>

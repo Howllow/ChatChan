@@ -28,7 +28,28 @@
             justify-content: flex-start;
             align-items: center;
         }
-        
+        .container-main{
+            width: 30%;
+            height: 100%;
+            margin: 0 auto;
+            border: 1px solid;
+            border-color: black;
+        }
+        form {
+            margin-top: 50px;
+        }
+
+        label {
+            color: rgb(80, 220, 255);
+        }
+
+        .btn {
+            margin-top: 30px;
+            display: block;
+            margin: 0 auto;
+            width: 100px;
+            
+        }
     </style>
 </head>
 <body>
@@ -56,6 +77,23 @@
             </div>
         </div>
     </nav>
-
+    <div class="container-main">
+        <div style="margin-top: 70px;">
+            <div class="form-group ">
+                <label for="password">Old Password</label>
+                <input type="password" class="form-control" id="oldpassword" placeholder="Password ">
+            </div>
+            <div class="form-group ">
+                <label for="password">New Password</label>
+                <input type="password" class="form-control" id="newpassword" placeholder="New Password ">
+            </div>
+            <div class="form-group ">
+                <label for="password">Repeat New Password</label>
+                <input type="password" class="form-control" id="newpassword2" placeholder="Repeat New Password ">
+            </div>
+            
+            <button class="btn btn-primary" id="confirm">Confirm</button>
+        </div>
+    </div>
 </body>
 </html>

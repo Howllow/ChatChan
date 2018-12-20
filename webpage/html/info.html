@@ -28,7 +28,20 @@
             justify-content: flex-start;
             align-items: center;
         }
-        
+        .container-main{
+            width: 50%;
+            height: 100%;
+            margin: 0 auto;
+            border: 1px solid;
+            border-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .gender-box{
+            margin-top: 15%; 
+        }
     </style>
 </head>
 <body>
@@ -56,6 +69,27 @@
             </div>
         </div>
     </nav>
-
+    <div class="sidebar col-md-2">
+        <div class="list-group">
+            <a href="#" class="list-group-item active">profile</a>
+            <a href="#" class="list-group-item">setting2</a>
+            <a href="#" class="list-group-item">setting3</a>
+        </div>
+    </div>
+    <div class="container-main">
+        <div class="gender-box">
+            <label for="gener">Gender</label>
+            <div class="radio-inline">
+                <label>
+                    <input type="radio" name="optionsRadios" id="gender-male" value="option1" checked> male
+                </label>
+            </div>
+            <div class="radio-inline">
+                <label>
+                    <input type="radio" name="optionsRadios" id="gender-female" value="option2"> female
+                </label>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
