@@ -21,47 +21,184 @@ a naive online chat program(python)
 
 ### API
 
-client needs to send a dict to server 
+* Get recent chatroom
 
-~~~ python
-{
-    'username':string
-    'password':string
-    'type':string
-    'grpname':string
-    'chatwith':string
-    'message':string
-}
-~~~
+operation：room/recent
 
-* 'type' means the operation type:
+method: post
 
-  * register
+send: 
 
-  * login
-  * makegrp
-  * disgrp
-  * entergrp
-  * leavegrp
-  * grpchat
-  * prchat
-  * grpmember
-  * useronline
-  * logout
+```
+userid: number
+```
 
-* 'grpname'
+response:
 
-  name of the group you're willing to make/enter/leave/dissolve
+```
+response_code: number
+roomlist: list
+```
 
-* 'chatwith'
+* Get chatroom message list
 
-  used in private chat, means who you want to chat with
+operation: room/msg
 
-* 'message'
+method: post
 
-  message you send while chatting
+send:
 
+```
+roomid: number
+```
 
+response:
+
+```
+response_code: number
+msg_list: list
+```
+
+* Get chatroom list
+
+operation: user/roomlist
+
+method: post
+
+send:
+
+```
+userid: number
+type: number(0 for created room/1 for joined room)
+```
+
+response:
+
+```
+response_code: number
+roomlist: list
+```
+
+* Create a chatroom
+
+operation: room/new
+
+method: post
+
+send:
+
+```
+roomname: string
+room_ownerid: number
+description: string
+```
+
+response:
+
+```
+response_code: number
+roomid: number
+```
+
+* Search for chatroom
+
+operation: room/search
+
+method: post
+
+send:
+
+```
+keyword: string
+```
+
+response:
+
+```
+response_code: number
+roomlist: list
+```
+
+* Change user profile
+
+operation: user/profile
+
+method: post
+
+send:
+
+```
+gender: number
+(others)
+```
+
+response:
+
+```
+response_code: number
+```
+
+* Change password
+
+operation: user/setting
+
+method: post
+
+send:
+
+```
+username: string
+old_password: string
+new_password: string
+```
+
+response:
+
+```
+response_code: number
+```
+
+* login
+
+operation: login
+
+method: post
+
+send:
+
+```
+username: string
+password: string
+```
+
+response:
+
+```
+response_code: number
+```
+
+* register
+
+operation: register
+
+method: post
+
+send:
+
+```
+username: string
+password: string
+```
+
+response:
+
+```
+response_code: number
+```
+
+* logout
+
+depends on user management?
 
 ### Server
 
