@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <title>chat</title>
     <style>
@@ -15,7 +15,7 @@
         }
 
         body {
-            background-image: url(../img/bg.jpg);
+            background-image: url(/static/img/bg.jpg);
             background-size: 100% 100%;
             background-repeat: no-repeat;
             
@@ -27,7 +27,7 @@
             border-radius: 25px;
             box-shadow: 2px 1px 1px gray;
             width: 450px;
-            height: 250px;
+            height: 320px;
             background-color: aquamarine;
             margin: 0 auto;
             margin-top: 10px;
@@ -43,10 +43,11 @@
         }
 
         .btn {
+            margin-top: 30px;
             display: block;
             margin: 0 auto;
-            margin-top: 20px;
             width: 100px;
+            
         }
 
         .logo {
@@ -74,7 +75,7 @@
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container-nav">
-            <img src="../img/chat.png" class="nav-logo" alt="">
+            <img src="/static/img/chat.png" class="nav-logo" alt="">
             <div class="menu">
                 <ul class="nav navbar-nav">
                     <li><a href="home.html">Home</a></li>
@@ -96,8 +97,7 @@
             </div>
         </div>
     </nav>
-
-    <img src="../img/chat.png" class="logo" alt="">
+    <img src="/static/img/chat.png" class="logo" alt="">
     <div class="container">
         <div style="margin-top: 30px;">
             <div class="form-group">
@@ -108,30 +108,27 @@
                 <label for="password">Password</label>
                 <input type="password" class="form-control" id="password" placeholder="Password ">
             </div>
-
-            <button class="btn btn-primary" id="login">Login</button>
-            <p id="register" class="text-primary text-right"><u>click here to register</u></p>
+            <div class="form-group ">
+                <label for="password">Repeat Password</label>
+                <input type="password" class="form-control" id="password2" placeholder="Repeat Password ">
+            </div>
+            
+            <button class="btn btn-primary" id="register">Register</button>
         </div>
 
     </div>
 
     <script>
-        $('#register').mouseover(function(){
-            $(this).css('cursor','pointer')
-        })
-        $('#register').click(function(){
-            window.location.href = './register.html';
-        })
         $('#login').click(function () {
-            var _teacherId = $('#teacherId').val();
+            var _username = $('#username').val();
             var _password = $('#password').val();
-            console.log(_teacherId, _password);
+            console.log(_username, _password);
             $.ajax({
                 type: 'POST',
-                url: 'http://39.105.109.207:5000/teacher/login',
+                url: 'http://localhost:5000/register',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify({ teacherId: _teacherId, password: _password }),
+                data: JSON.stringify({ username: _username, password: _password }),
                 success: function (res) {
                     console.log(res);
                     if (res['response_code'] == 1) {
