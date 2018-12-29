@@ -1,4 +1,4 @@
-# ChatChan(Updated Dec/03)
+# ChatChan(Updated Dec/29)
 a naive online chat program(python)
 
 
@@ -200,5 +200,131 @@ response_code: number
 
 depends on user management?
 
-### Server
+### Database Functions（mydb.py）
 
+* check_reglog(json)
+
+  * input:
+    ~~~ 
+    username:string
+    password:string
+    opcode:0(login)/register(1)
+    ~~~
+
+  * function: 
+    - check if username has existed(login)
+    - check if user is existed, then check the password(register)
+
+  * output: 
+
+    ~~~
+    response_code:0(failed)/1
+    ~~~
+
+* create_room(json)
+
+  * input:
+    ~~~ 
+    roomname:string
+    room_owner:string
+    description:string
+    ~~~
+
+  * function:
+    * check if room has existed, if not, create it and record the room info
+
+  * output: 
+
+    ~~~
+    response_code:0/1
+    ~~~
+
+* room_lst(json)
+
+  * input:
+
+    ~~~ 
+    username:string
+    type:0/1
+    ~~~
+
+  * function:
+
+    * opcode = 1: return the rooms user is in
+    * opcode = 0: only return the rooms user created
+
+  * output:
+
+    ~~~
+    response_code:0/1
+    roomlist:list
+    ~~~
+* search_room(json)
+  * input:
+    ~~~
+    key_word:string
+    ~~~
+  * function:
+    * find chatrooms using the given keyword
+  * output:
+    ~~~
+    response_code:0/1
+    roomlist:list
+    ~~~
+ 
+* change_pwd(json)
+
+  * input:
+
+    ~~~
+    username:string
+    old_password:string
+    new_password:string
+    ~~~
+
+  * function:
+
+    * check if old_password is correct
+    * then change it
+
+  * output:
+
+    ~~~
+    response_code:0/1
+    ~~~
+
+* msg_lst(json)
+
+  * input:
+
+    ~~~ 
+    roomname:string
+    ~~~
+
+  * function:
+
+    * return all messages in this room
+    * meanwhile update "message_num" in all rooms, and see if there are changes
+
+  * output:
+
+    ~~~
+    response_code:0/1
+    msg_list:list
+    change_list:list(contents are (roomname, newmsg_num))
+    ~~~
+* change_profile(json)
+  * input:
+    ~~~
+    username:string
+    category:string(e.g. gender)
+    value:string
+    ~~~
+  * function:
+    * change user's profile.
+  * output:
+    ~~~
+    response_code:0/1
+    ~~~
+
+  ​
