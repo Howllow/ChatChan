@@ -140,4 +140,13 @@ if __name__ == '__main__':
     # exit_chatroom({'account': 'limuyu', 'room_name': 'naruto'}, connection)
     # print(json.dumps(get_members_from_room_name({'room_name': 'naruto'}, connection), ensure_ascii=False, indent=4))
 
-    entropy_naive(connection)
+    register_user({
+        'account': 'limuyu',
+        'password': 'limuyu'
+    }, connection)
+
+    # login_user({
+    #     'account': 'lmuyu',
+    #     'password': '123',
+    # }, connection)
+    # entropy_naive(connection)
