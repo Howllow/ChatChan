@@ -17,7 +17,6 @@ from db.config import *
 
 def register_user(data: Dict[str, str], conn: Connection):
     """
-
     :param data:
         python dictionary, containing keys as follows:
             account: string (len < 20)
@@ -40,6 +39,9 @@ def register_user(data: Dict[str, str], conn: Connection):
     sql = 'select account from user;'
     cursor.execute(sql)
     rows = cursor.fetchall()
+
+    rows = [row[0] for row in rows]
+
     for row in rows:
         if data['account'] == row:
             logging.debug(F'user account {data["account"]} already exists')
@@ -54,6 +56,50 @@ def register_user(data: Dict[str, str], conn: Connection):
 
     logging.debug(F'register for account {data["account"]} succeeded')
     return 'success'
+
+
+def login_user(data: Dict[str, str], conn: Connection):
+    """
+    :param data:
+        python dictionary, containing keys as follows:
+            account: string (len < 20)
+            password: string (len < 20)
+    :param conn:
+        pymysql connection
+    :return:
+        message:
+            success: registering succeeded
+            account not found :
+            wrong password:
+
+    """
+    if not check(['account', 'password'], data, 'register'):
+        return 'failed'
+
+    cursor = conn.cursor()
+
+    sql = 'select account from user;'
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+
+    rows = [row[0] for row in rows]
+
+    if data['account'] not in rows:
+        logging.debug(F'user account {data["account"]} not found')
+        return 'account not found'
+
+    sql = F"select password from user where account = '{data['account']}';"
+    cursor.execute(sql)
+    true_password = cursor.fetchall()[0][0]
+
+    cursor.close()
+
+    if true_password != data['password']:
+        logging.debug(F'login for account {data["account"]} wrong password')
+        return 'wrong password'
+    else:
+        logging.debug(F'login for account {data["account"]} succeeded')
+        return 'success'
 
 
 def create_chatroom(data: Dict[str, str], conn: Connection):
@@ -80,7 +126,7 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
     cursor.execute(sql)
     rows = cursor.fetchall()
     for row in rows:
-        if data['room_name'] == row:
+        if data['room_name'] == row[0]:
             logging.debug(F'room {data["room_name"]} already exists')
             return 'duplicate'
 
@@ -94,6 +140,9 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
 
     logging.debug(F'creating room: {data["room_name"]} succeeded')
     return 'success'
+
+
+
 
 
 def enter_chatroom(data: Dict[str, str], conn: Connection):
