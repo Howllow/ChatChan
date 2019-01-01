@@ -123,7 +123,7 @@
             window.location.href = './register.html';
         })
         $('#login').click(function (){
-        var _username = $('#username').val();
+            var _username = $('#username').val();
             var _password = $('#password').val();
             $.ajax({
                 type: 'POST',
@@ -134,7 +134,7 @@
                 success: function (res) {
                     console.log(res);
                     if (res['response_code'] == 1) {
-                        window.location.href = './register.html?teacherid='+_teacherId;
+                        window.location.href = './home.html'
                     }
                     else {
                         alert('账号或密码错误！');
