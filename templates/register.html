@@ -122,21 +122,30 @@
         $('#register').click(function () {
             var _username = $('#username').val();
             var _password = $('#password').val();
-            console.log(_username, _password);
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:5000/register',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify({ username: _username, password: _password }),
-                success: function (res) {
-                    console.log(res)
-                }
-            })
+            var _password2 = $('#password2').val();
+            console.log(_username, _password, _password2);
+            if(_password != _password2){
+                alert("Didn't repeat the same password!")
+            }
+            else{
+                /*
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:5000/register',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify({ username: _username, password: _password })
+                })*/
+                $.post('http://localhost:5000/register',
+                {
+                    username:_username,
+                    password:_password
+                });
+            }
         })
         $('body').keydown(function(e) {
             if(e.keyCode=='13') {
-                $('#login').click();
+                $('#register').click();
             }
         })
     </script>
