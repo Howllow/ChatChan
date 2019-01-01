@@ -29,14 +29,13 @@ def register():
         return render_template('register.html')
     elif request.method == 'POST':
         data = request.get_json()
+        data['account'] = data.pop('username')
         print(data)
         reg_message = register_user(data, db)
-        if reg_message == 'duplicate':
-            return render_template('register.html', message='User already existed!')
-        elif reg_message == 'success':
-            return render_template('login.html')
+        if reg_message == 'success':
+            return redirect(url_for('login'))
         else:
-            return render_template('register.html', message='Unknown Error!')
+            return render_template('register.html', message=reg_message)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -45,18 +44,24 @@ def login():
         return render_template('login.html')
     elif request.method == 'POST':
         data = request.get_json()
-        log_message = somefunction(data)
+        data['account'] = data.pop('username')
+        log_message = login_user(data, db)
         if log_message == 'success':
             usr = user.User()
-            usr.username = data['username']
+            usr.username = data['account']
             fl.login_user(usr)
             flash('Login Success')
             next = request.args.get('next')
-            return redirect(next or 'home.html')
-        elif log_message == 'nonexist':
-            return render_template('login.html', message="User doesn't exist!")
+            return redirect(next or url_for('home'))
         else:
-            return render_template('login.html', message="Unknown Error!")
+            return render_template('login.html', message=log_message)
+
+
+@app.route('/home', methods=['GET', 'POST'])
+@fl.login_required
+def home():
+    if request.method == 'GET':
+        return render_template('home.html')
 
 
 @app.route('/room/msg', methods=['GET'])
@@ -78,7 +83,6 @@ def new_room():
 def recent_room():
     if request.method == 'POST':
         data = request.get_json()
-
         return room_lst(data)
 
 
