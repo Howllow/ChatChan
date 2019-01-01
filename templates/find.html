@@ -28,22 +28,35 @@
             justify-content: flex-start;
             align-items: center;
         }
+        form{
+            width: 35%;
+        }
         .search-box{
             display: flex;
             justify-content: center;
             align-content: center;
             margin: 0 auto;
             margin-top:30px;
-            width: 50%;
+            width: 100%;
             height: 40px;
         }
         .form-group{
-            width: 80%;
+            width: 100%;
             height: 40px;
             margin-right: 10px;
         }
         .form-control{
             height: 100%;
+        }
+        .container-main{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .check-box{
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -72,16 +85,32 @@
             </div>
         </div>
     </nav>
-    <form role="form" >
-        <div class="search-box">
-            <div class="form-group">
-                <input type="text" class="form-control" placeholder="search...">
+    <div class="container-main">
+        <form role="form" >
+            <div class="search-box">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="search...">
+                </div>
+                <button type="button" class="btn btn-info btn-lg">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
+                </button>
             </div>
-            <button type="button" class="btn btn-info btn-lg">
-                <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
-            </button>
+        </form>
+        <div class="check-box">
+            <div class="radio-inline">
+                <label>
+                    <input type="radio" name="optionsRadios" id="user" value="option1" checked> user
+                </label>
+            </div>
+            <div class="radio-inline">
+                <label>
+                    <input type="radio" name="optionsRadios" id="room" value="option2"> room
+                </label>
+            </div>
         </div>
-    </form>
-    
+    </div>
 </body>
+<script>
+    
+</script>
 </html>

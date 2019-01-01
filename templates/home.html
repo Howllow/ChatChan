@@ -99,19 +99,10 @@
         </div>
     </nav>
     <div class="sidebar col-md-2">
-        <div class="list-group" style="display:none">
-            <a href="#" class="list-group-item active">room1</a>
-            <a href="#" class="list-group-item">room2</a>
-            <a href="#" class="list-group-item">room3</a>
-            <a href="#" class="list-group-item">room4</a>
-        </div>
-        <div class="list-group">
-            {% for room in roomlist%}
-                <a href="#" class="list-group-item" id="{{ room.id }}">{{ room.name }}
-                    <span class="glyphicon glyphicon-bell" ></span>
-                </a>
-                <a href="#" class="list-group-item" id="{{ room.id1 }}">{{ room.name }}</a>
-            {% endfor %}
+        <div class="list-group" id="room-list">
+            <a href="#" class="list-group-item" >{{ room.name }}
+                <span class="glyphicon glyphicon-bell" ></span>
+            </a>
         </div>
     </div>
     <div class="chat-panel col-md-10" style="visibility:hidden ">
@@ -133,43 +124,78 @@
     </div>
 </body>
 <script>
-    $(".list-group-item").click(function(){
-        var room_id=this.id;
-        var room_name=this.text;
-        $(this).siblings().removeClass("active");
-        $(this).addClass("active");
-        $(".glyphicon-bell").css("visibility","hidden")
+    $(document).ready(function(){
+        setInterval("check_update()",1000);
+        var room=document.createElement("a");
+        room.setAttribute("class","list-group-item");
+        room.setAttribute("href","#");
+        room.innerText="room";
+        var bell=document.createElement("span");
+        bell.setAttribute("class","glyphicon glyphicon-bell");
+        room.appendChild(bell);
+        $("#room-list").append(room);
 
-        $(".chat-panel").css("visibility","visible")
-        $(".room-info").text(room_name)
-        var msglist=['str1','str2','str3'];
-        for(var i=0; i<msglist.length;i++){
-            var msg=document.createElement("p");
-            msg.innerHTML=msglist[i];
-            $(".room-msg").append(msg);
-        }
+        //get room msg
+        $(".list-group-item").click(function(){
+            var room_name=this.text;
+            $(this).siblings().removeClass("active");
+            $(this).addClass("active");
+            $(".glyphicon-bell").css("visibility","hidden")
+
+            $(".chat-panel").css("visibility","visible")
+            $(".room-info").text(room_name)
+            var msglist=['str1','str2','str3'];
+            for(var i=0; i<msglist.length;i++){
+                var msg=document.createElement("p");
+                msg.innerHTML=msglist[i];
+                $(".room-msg").append(msg);
+                
+            }
+        
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/room/msg',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ roomname: room_name }),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 1) {
+                        $(".chat-panel").css("visibility","visible")
+                        $(".room-info").text(room_name)
+                    }
+                    else {
+                        alert('msg error');
+                    }
+                }
+            })
+        });
+
+        //get roomlist
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/room/msg',
+            url: 'http://localhost:5000/user/roomlist',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: JSON.stringify({ roomid: room_id }),
+            //data: JSON.stringify({ roomid: room_id }),
             success: function (res) {
                 console.log(res);
-                if (res['response_code'] == 1) {
-                    $(".chat-panel").css("visibility","visible")
-                    $(".room-info").text(room_name)
+                if (res['response_code'] == 0) {
+                    var roomlist = res['roomlist'];
+                    for(var i=0; i<roomlist.length; i++){
+                        var room=document.createElement('a');
+                        room.addClass("list-group-item");
+                        room.text="room"
+                        $("#room-list").append(room);
+                    }
                 }
                 else {
-                    alert('msg error');
+                    alert('roomlist error');
                 }
             }
         })
-        
     });
-    $(document).ready(function(){
-        setInterval("check_update()",1000);
-    });
+
     function check_update(){
         $(".glyphicon-bell").css("visibility","visible")
     }

@@ -133,11 +133,14 @@
                 data: JSON.stringify({ username: _username, password: _password }),
                 success: function (res) {
                     console.log(res);
-                    if (res['response_code'] == 1) {
-                        window.location.href = './home.html'
+                    if (res['response_code'] == 0) {
+                        window.location.href = 'home'
                     }
-                    else {
-                        alert('账号或密码错误！');
+                    else if(res['response_code'] == 1) {
+                        alert('bad username or password!');
+                    }
+                    else{
+                        alert("error!");
                     }
                 }
             })

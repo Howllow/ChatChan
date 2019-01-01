@@ -124,23 +124,30 @@
             var _password = $('#password').val();
             var _password2 = $('#password2').val();
             console.log(_username, _password, _password2);
+            window.location.href = 'login'
             if(_password != _password2){
                 alert("Didn't repeat the same password!")
             }
             else{
-                /*
                 $.ajax({
                     type: 'POST',
                     url: 'http://localhost:5000/register',
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    data: JSON.stringify({ username: _username, password: _password })
-                })*/
-                $.post('http://localhost:5000/register',
-                {
-                    username:_username,
-                    password:_password
-                });
+                    data: JSON.stringify({ username: _username, password: _password }),
+                    success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 0) {
+                        window.location.href = 'login';
+                    }
+                    else if(res['response_code'] == 1) {
+                        alert('error!');
+                    }
+                    else{
+                        alert("already exists!");
+                    }
+                }
+                })
             }
         })
         $('body').keydown(function(e) {
