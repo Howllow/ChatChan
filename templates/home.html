@@ -50,14 +50,26 @@
             border-color: lightgray;
         }
         .room-msg{
+            display: flex;
+            flex-direction: column;
             height: 70%;
             border: 1px solid;
             border-color: lightgray;
+        }
+        .my-msg{
+            align-self: flex-end;
+        }
+        .others-msg{
+            align-self: flex-start;
         }
         .room-inputbox{
             height: 20%;
             border: 1px solid;
             border-color: lightgray;
+        }
+        .glyphicon-bell{
+            visibility: visible;
+            float: right;
         }
     </style>
 </head>
@@ -95,7 +107,9 @@
         </div>
         <div class="list-group">
             {% for room in roomlist%}
-                <a href="#" class="list-group-item" id="{{ room.id }}">{{ room.name }}</a>
+                <a href="#" class="list-group-item" id="{{ room.id }}">{{ room.name }}
+                    <span class="glyphicon glyphicon-bell" ></span>
+                </a>
                 <a href="#" class="list-group-item" id="{{ room.id1 }}">{{ room.name }}</a>
             {% endfor %}
         </div>
@@ -105,7 +119,8 @@
             room info
         </div>
         <div class="room-msg">
-            msg
+            <div class="my-msg">mymsg</div>
+            <div class="others-msg">ohters</div>
         </div>
         <div class="room-inputbox">
             <form role="form">
@@ -123,6 +138,16 @@
         var room_name=this.text;
         $(this).siblings().removeClass("active");
         $(this).addClass("active");
+        $(".glyphicon-bell").css("visibility","hidden")
+
+        $(".chat-panel").css("visibility","visible")
+        $(".room-info").text(room_name)
+        var msglist=['str1','str2','str3'];
+        for(var i=0; i<msglist.length;i++){
+            var msg=document.createElement("p");
+            msg.innerHTML=msglist[i];
+            $(".room-msg").append(msg);
+        }
         $.ajax({
             type: 'POST',
             url: 'http://localhost:5000/room/msg',
@@ -142,5 +167,11 @@
         })
         
     });
+    $(document).ready(function(){
+        setInterval("check_update()",1000);
+    });
+    function check_update(){
+        $(".glyphicon-bell").css("visibility","visible")
+    }
 </script>
 </html>

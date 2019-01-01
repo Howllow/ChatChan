@@ -43,6 +43,9 @@
             height: 60px;
 
         }
+        .btn{
+            float:right;
+        }
     </style>
 </head>
 <body>
@@ -72,8 +75,7 @@
     </nav>
     <div class="sidebar col-md-2">
         <div class="list-group">
-            <a href="/user/roomlist?type=0" class="list-group-item active">joined room</a>
-            <a href="/user/roomlist?type=1" class="list-group-item">created room</a>
+            <a href="/user/roomlist" class="list-group-item active">my room</a>
             <a href="/room/new" class="list-group-item">new room</a>
         </div>
     </div>
@@ -93,6 +95,9 @@
                 <a href="#" class="list-group-item roomlist-item" id="{{ room.id }}">
                     <img src="../static/img/room-logo.png" class="room-logo">
                     {{ room.name }}
+                    <button type="button" class="btn btn-info btn-sm">
+                        <span class="glyphicon glyphicon-log-out"></span> Leave
+                    </button>
                 </a>
             {% endfor %}
         </div>
