@@ -61,7 +61,6 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
     :param data:
         python dictionary, containing keys as follows:
             room_name: string (len < 20)
-            password: string (len < 20)
     :param conn:
         pymysql connection
     :return:
@@ -73,8 +72,6 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
 
     if not check(['room_name'], data, 'register'):
         return 'failed'
-    if 'password' not in data:
-        data['password'] = ''
 
     cursor = conn.cursor()
 
@@ -88,8 +85,8 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
             return 'duplicate'
 
     dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    sql = F"insert into chat_room (room_name, password, create_time)" \
-        F" VALUE ('{data['room_name']}', '{data['password']}', '{dt}');"
+    sql = F"insert into chat_room (room_name, create_time)" \
+        F" VALUE ('{data['room_name']}', '{dt}');"
     cursor.execute(sql)
 
     conn.commit()
