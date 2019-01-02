@@ -58,6 +58,20 @@
         .check-box{
             margin-top: 20px;
         }
+        .room-logo{
+            width: 80px;
+            height: 60px;
+        }
+        .user-logo{
+            width: 60px;
+            height: 60px;
+        }
+        .list-group{
+            width: 40%;
+        }
+        .btn-sm{
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -75,7 +89,6 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="info.html">info</a></li>
                             <li><a href="setting.html">setting</a></li>
                             <li class="divider"></li>
                             <li><a href="#">logout</a></li>
@@ -99,18 +112,56 @@
         <div class="check-box">
             <div class="radio-inline">
                 <label>
-                    <input type="radio" name="optionsRadios" id="user" value="option1" checked> user
+                    <input type="radio" name="searchtype" id="user" value="user" checked> user
                 </label>
             </div>
             <div class="radio-inline">
                 <label>
-                    <input type="radio" name="optionsRadios" id="room" value="option2"> room
+                    <input type="radio" name="searchtype" id="room" value="room"> room
                 </label>
             </div>
+        </div>
+        <div class="list-group" id="room-list" style="display:none;">
+            
+        </div>
+        <div class="list-group" id="user-list" style="display:none;">
+            
         </div>
     </div>
 </body>
 <script>
-    
+    $(".btn").click(function(){
+        var type=$("input[name='searchtype']:checked").val();
+        userlist=["user1","user2"];
+        roomlist=["room1","room2"];
+        if(type=='room'){
+            $("#user-list").css("display","none");
+            $("#room-list").css("display","unset");
+            for(var i=0; i<roomlist.length;i++){
+                var room=document.createElement("a");
+                room.setAttribute("class","list-group-item");
+                room.setAttribute("href","#");
+                room.innerHTML="<img src='../static/img/room-logo.png' class='room-logo'>" +
+                roomlist[i] +
+                "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-send'></span> Join</button>";
+                $("#room-list").append(room);
+
+            }
+        }
+        else{
+            $("#room-list").css("display","none");
+            $("#user-list").css("display","unset");
+            for(var i=0; i<userlist.length;i++){
+                var user=document.createElement("a");
+                user.setAttribute("class","list-group-item");
+                user.setAttribute("href","#");
+                user.innerHTML="<img src='../static/img/user.png' class='user-logo'>" +
+                userlist[i] +
+                "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-send'></span> Chat</button>";
+                $("#user-list").append(user);
+
+            }
+        }
+    });
 </script>
 </html>
