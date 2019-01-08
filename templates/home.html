@@ -134,13 +134,45 @@
         room.innerHTML="room" + 
             "<span class='glyphicon glyphicon-bell'></span>";
         $("#room-list").append(room);
-
-        //get room msg
+        
+        //get roomlist
+        /*
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/user/roomlist',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            //data: JSON.stringify({ roomid: room_id }),
+            success: function (res) {
+                console.log(res);
+                if (res['response_code'] == 0) {
+                    var roomlist=res['roomlist'];
+                    for(var i=0; i<roomlist.length; i++){
+                        var room=document.createElement('a');
+                        room.addClass("list-group-item");
+                        room.innerHTML=roomlist[i].room_name + 
+                            "<span class='glyphicon glyphicon-bell'></span>";
+                        if(roomlist[i].has_new){
+                            $(this).find(".glyphicon-bell").css("visibility","visible")
+                        }
+                        else{
+                            $(this).find(".glyphicon-bell").css("visibility","hidden")
+                        }
+                        $("#room-list").append(room);
+                    }
+                }
+                else {
+                    alert('roomlist error');
+                }
+            }
+        })
+        */
+         //get room msg
         $(".list-group-item").click(function(){
             var room_name=this.text;
             $(this).siblings().removeClass("active");
             $(this).addClass("active");
-            $(".glyphicon-bell").css("visibility","hidden")
+            $(this).find(".glyphicon-bell").css("visibility","hidden")
 
             $(".chat-panel").css("visibility","visible")
             $(".room-info").text(room_name)
@@ -151,61 +183,95 @@
                 $(".room-msg").append(msg);
                 
             }
-        
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:5000/room/msg',
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: JSON.stringify({ roomname: room_name }),
-                success: function (res) {
-                    console.log(res);
-                    if (res['response_code'] == 1) {
-                        $(".chat-panel").css("visibility","visible")
-                        $(".room-info").text(room_name)
-                    }
-                    else {
-                        alert('msg error');
-                    }
-                }
-            })
+            setInterval(get_room_msg,1000,room_name);
         });
+    });
 
-        //get roomlist
+    function check_update(){
+        $(".glyphicon-bell").css("visibility","visible")
         $.ajax({
             type: 'POST',
             url: 'http://localhost:5000/user/roomlist',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            //data: JSON.stringify({ roomid: room_id }),
+            data: JSON.stringify({ username: user_name }),
             success: function (res) {
                 console.log(res);
                 if (res['response_code'] == 0) {
-                    var roomlist = res['roomlist'];
+                    var roomlist=res['roomlist'];
                     for(var i=0; i<roomlist.length; i++){
                         var room=document.createElement('a');
                         room.addClass("list-group-item");
-                        room.innerHTML=roomlist[i] + 
+                        room.innerHTML=roomlist[i].room_name + 
                             "<span class='glyphicon glyphicon-bell'></span>";
+                        if(roomlist[i].has_new){
+                            $(this).find(".glyphicon-bell").css("visibility","visible")
+                        }
+                        else{
+                            $(this).find(".glyphicon-bell").css("visibility","hidden")
+                        }
                         $("#room-list").append(room);
                     }
                 }
                 else {
-                    alert('roomlist error');
+                    alert('msg error');
                 }
             }
         })
-    });
-
-    function check_update(){
-        $(".glyphicon-bell").css("visibility","visible")
     }
+
+    function get_room_msg(room_name){
+        //alert(room_name)
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/room/msg',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ roomname: room_name }),
+            success: function (res) {
+                console.log(res);
+                if (res['response_code'] == 0) {
+                    $(".chat-panel").css("visibility","visible")
+                    $(".room-info").text(room_name)
+                }
+                else {
+                    alert('msg error');
+                }
+            }
+        })
+    }
+    
     $('.room-inputbox').keydown(function(e) {
         if(e.keyCode=='13') {
             var msg=$('textarea').val();
             e.preventDefault();
             $('textarea').val('');
-            alert(msg);
+            var room_name;
+            var roomlist=$("#room-list").children();
+            // get room name
+            for(var i=0; i<roomlist.length; i++){               
+                if(roomlist[i].getAttribute("class").indexOf("active")>-1){
+                    room_name=roomlist[i].innerText;
+                }
+            }
+            //alert(room_name);
+            // send message
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/user/send',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ roomname: room_name, msg: msg }),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 0) {
+                        
+                    }
+                    else {
+                        alert('msg send error');
+                    }
+                }
+            })
         }
     })
 </script>
