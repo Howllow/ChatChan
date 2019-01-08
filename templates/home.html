@@ -55,6 +55,7 @@
             height: 70%;
             border: 1px solid;
             border-color: lightgray;
+            overflow-y: scroll;
         }
         .my-msg{
             align-self: flex-end;
@@ -66,6 +67,7 @@
             height: 20%;
             border: 1px solid;
             border-color: lightgray;
+            overflow-y: scroll;
         }
         .glyphicon-bell{
             visibility: visible;
@@ -88,7 +90,7 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="info.html">info</a></li>
+                            <!--li><a href="info.html">info</a></li-->
                             <li><a href="setting.html">setting</a></li>
                             <li class="divider"></li>
                             <li><a href="#">logout</a></li>
@@ -111,7 +113,7 @@
         </div>
         <div class="room-msg">
             <div class="my-msg">mymsg</div>
-            <div class="others-msg">ohters</div>
+            <div class="others-msg">others</div>
         </div>
         <div class="room-inputbox">
             <form role="form">
@@ -129,10 +131,8 @@
         var room=document.createElement("a");
         room.setAttribute("class","list-group-item");
         room.setAttribute("href","#");
-        room.innerText="room";
-        var bell=document.createElement("span");
-        bell.setAttribute("class","glyphicon glyphicon-bell");
-        room.appendChild(bell);
+        room.innerHTML="room" + 
+            "<span class='glyphicon glyphicon-bell'></span>";
         $("#room-list").append(room);
 
         //get room msg
@@ -185,7 +185,8 @@
                     for(var i=0; i<roomlist.length; i++){
                         var room=document.createElement('a');
                         room.addClass("list-group-item");
-                        room.text="room"
+                        room.innerHTML=roomlist[i] + 
+                            "<span class='glyphicon glyphicon-bell'></span>";
                         $("#room-list").append(room);
                     }
                 }
@@ -199,5 +200,13 @@
     function check_update(){
         $(".glyphicon-bell").css("visibility","visible")
     }
+    $('.room-inputbox').keydown(function(e) {
+        if(e.keyCode=='13') {
+            var msg=$('textarea').val();
+            e.preventDefault();
+            $('textarea').val('');
+            alert(msg);
+        }
+    })
 </script>
 </html>
