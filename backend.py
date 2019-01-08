@@ -27,55 +27,96 @@ def homepage():
 def register():
     if request.method == 'GET':
         return render_template('register.html')
+
     elif request.method == 'POST':
         data = request.get_json()
         data['account'] = data.pop('username')
         print(data)
+        res = dict()
         reg_message = register_user(data, db)
+
         if reg_message == 'success':
-            return redirect(url_for('login'))
+            res['response_code'] = 0
+
+        elif reg_message == 'duplicate':
+            res['response_code'] = 1
+
         else:
-            return render_template('register.html', message=reg_message)
+            res['response_code'] = 2
+
+        return json.dumps(res)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+
     elif request.method == 'POST':
         data = request.get_json()
         data['account'] = data.pop('username')
         log_message = login_user(data, db)
+        res = dict()
+
         if log_message == 'success':
             usr = user.User()
             usr.username = data['account']
+            usr.id = data['account']
             fl.login_user(usr)
             flash('Login Success')
-            next = request.args.get('next')
-            return redirect(next or url_for('home'))
+            res['response_code'] = 0
+
+
+        elif log_message == 'account not found':
+            res['response_code'] = 1
+
         else:
-            return render_template('login.html', message=log_message)
+            res['response_code'] = 2
+
+        return json.dumps(res)
 
 
 @app.route('/home', methods=['GET', 'POST'])
 @fl.login_required
 def home():
     if request.method == 'GET':
-        return render_template('home.html')
+        #rooms = somerooms(fl.current_user.username)
+        return render_template('home.html') #roomlist = rooms)
+
+    else:
+        res = dict()
+        data = dict()
+        data['username'] = fl.current_user.username
+        res['room_list'] = get_room_name_from_username(data, db)
+        res['response_code'] = 0
+        return json.dumps(res)
 
 
 @app.route('/room/msg', methods=['GET'])
 @fl.login_required
 def get_msg():
     data = request.get_json()
-    return msg_lst(data)
+    res = dict()
+    res['msg_list'] = get_messages_from_room_name(data['room_name'], db)
+    res['response_code'] = 0
+    return json.dumps(res)
 
 
 @app.route('/room/new', methods=['POST'])
 @fl.login_required
 def new_room():
-    data = json.loads(request.get_json())
-    return create_room(data)
+    data = request.get_json()
+    flag = create_chatroom(data, db)
+    if flag == 'success':
+        data['response_code'] = 0
+
+    elif flag == 'duplicate':
+        data['response_code'] = 1
+
+    else:
+        data['response_code'] = 2
+
+    return json.dumps(data)
 
 
 @app.route('/user/roomlist', methods=['POST', 'GET'])
@@ -96,16 +137,6 @@ def usr_set():
         return change_pwd(data)
 
 
-@app.route('/user/profile', methods=['POST', 'GET'])
-@fl.login_required
-def usr_info():
-    if request.method == 'GET':
-        return render_template('info.html')
-    elif request.method == 'POST':
-        data = request.get_json()
-        return change_profile(data)
-
-
 @app.route('/room/search', methods=['POST', 'GET'])
 @fl.login_required
 def room_search():
@@ -114,6 +145,11 @@ def room_search():
     elif request.method == 'POST':
         data = request.get_json()
         return search_room(data)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return user.UserManager.get(user_id)
 
 
 if __name__ == '__main__':
