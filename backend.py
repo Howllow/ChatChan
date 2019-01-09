@@ -170,9 +170,7 @@ def send_msg():
 @fl.login_required
 def logout():
     fl.logout_user()
-    res = dict()
-    res['response_code'] = 0
-    return json.dumps(res)
+    return redirect(url_for('login'))
 
 
 @login_manager.user_loader
