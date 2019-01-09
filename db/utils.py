@@ -15,3 +15,10 @@ def check(key_list, can_dict, task):
             logging.debug(F'key:{key}, not in given data, in task {task}!!! Exit...')
             return 0
     return 1
+
+
+def judge_similar(s1, s2):
+    for c in s1:
+        if c not in s2:
+            return 0
+    return 1

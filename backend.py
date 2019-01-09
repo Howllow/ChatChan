@@ -7,7 +7,6 @@
 
 """
 from flask import *
-from flask_socketio import *
 from db.mydb import *
 from db.config import *
 import user
@@ -25,6 +24,7 @@ app.config['SECRET_KEY'] = 'chatchan'
 
 password = ""
 db = pymysql.connect(**config)
+
 
 @app.route('/')
 def homepage():
@@ -143,6 +143,7 @@ def usr_set():
     elif request.method == 'POST':
         res = dict()
         data = request.get_json()
+        data['account'] = data.pop('username')
         res['response_code'] = change_pwd(data, db)
         return json.dumps(res)
 
@@ -162,7 +163,7 @@ def room_search():
             res['roomlist'] = find_room(keyword, db)
             res['response_code'] = 0
         else:
-            res['userlist'] = find_user(keyword, db)
+            res['userlist'] = find_name(keyword, db)
             res['response_code'] = 0
 
         return json.dumps(res)
@@ -188,6 +189,20 @@ def my_room():
 def new_room1():
     if request.method == 'GET':
         return render_template('new.html')
+
+
+@app.route('/room/leave', methods=['POST'])
+@fl.login_required
+def leave_room():
+    data = request.get_json()
+    data['account'] = data.pop('username')
+    data['room_name'] = data.pop('roomname')
+    res = dict()
+    res['response_code'] = 1
+    flag = exit_chatroom(data, db)
+    if flag == 'success':
+        res['response_code'] = 0
+    return json.dumps(res)
 
 
 @app.route('/user/send', methods=['POST'])

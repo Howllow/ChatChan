@@ -11,6 +11,7 @@ from pymysql.connections import Connection
 from typing import Dict
 import datetime
 from db.utils import check
+from db.utils import judge_similar
 
 from db.config import *
 
@@ -279,3 +280,90 @@ def get_all_room_names(conn: Connection):
     cursor.close()
 
     return [a[0] for a in rooms]
+
+
+def find_name(s, conn: Connection):
+    cursor = conn.cursor()
+    sql = 'select account from user'
+    cursor.execute(sql)
+
+    accounts = [a[0] for a in cursor.fetchall()]
+
+    res = []
+    for account in accounts:
+        if s == account:
+            res.append(account)
+
+    for account in accounts:
+        if s in account and account not in res:
+            res.append(account)
+
+    for account in accounts:
+        if judge_similar(s, account) and account not in res:
+            res.append(account)
+
+    cursor.close()
+
+    return res
+
+
+def find_room(s, conn: Connection):
+    cursor = conn.cursor()
+    sql = 'select room_name from chat_room'
+    cursor.execute(sql)
+
+    rns = [a[0] for a in cursor.fetchall()]
+
+    res = []
+
+    for rn in rns:
+        if s == rn:
+            res.append(rn)
+
+    for rn in rns:
+        if s in rn and rn not in res:
+            res.append(rn)
+
+    for rn in rns:
+        if judge_similar(s, rn) and rn not in res:
+            res.append(rn)
+
+    cursor.close()
+
+    return res
+
+
+def get_room_by_name(s, conn: Connection):
+    cursor = conn.cursor()
+    sql = 'select chatting.room_name, max(send_time) ' \
+          'from chatting join messages using(room_name) ' \
+          'where chatting.account = "{}" and chatting.if_active = 1 ' \
+          'group by chatting.room_name'.format(s)
+    cursor.execute(sql)
+
+    res = cursor.fetchall()
+    cursor.close()
+
+    return res
+
+
+def change_pwd(data, conn: Connection):
+    cursor = conn.cursor()
+    sql = 'select account, password from user'
+    cursor.execute(sql)
+    tmp = cursor.fetchall()
+
+    if data['account'] not in [a[0] for a in tmp]:
+        return 'Invalid UserName'
+
+    if tmp[[a[0] for a in tmp].index(data['account'])][1] != data['old_password']:
+        return 'Wrong Password'
+
+    sql = 'update user set password = "{}" where account = "{}"'.format(data['new_password'], data['account'])
+
+    cursor.execute(sql)
+    conn.commit()
+
+    cursor.close()
+
+    return 'success'
