@@ -81,13 +81,15 @@ def login():
 def home():
     if request.method == 'GET':
         #rooms = somerooms(fl.current_user.username)
+        print(fl.current_user.username)
         return render_template('home.html') #roomlist = rooms)
 
     else:
         res = dict()
         data = dict()
         data['username'] = fl.current_user.username
-        res['room_list'] = get_room_name_from_username(data, db)
+        #res['room_list'] = get_room_name_from_username(data, db)
+        res['room_list'] = get_all_room_names(db)
         res['response_code'] = 0
         return json.dumps(res)
 
@@ -97,7 +99,7 @@ def home():
 def get_msg():
     data = request.get_json()
     res = dict()
-    res['msg_list'] = get_messages_from_room_name(data['room_name'], db)
+    res['msg_list'] = get_messages_from_room_name(data, db)
     res['response_code'] = 0
     return json.dumps(res)
 
@@ -107,16 +109,17 @@ def get_msg():
 def new_room():
     data = request.get_json()
     flag = create_chatroom(data, db)
+    res = dict()
     if flag == 'success':
-        data['response_code'] = 0
+        res['response_code'] = 0
 
     elif flag == 'duplicate':
-        data['response_code'] = 1
+        res['response_code'] = 1
 
     else:
-        data['response_code'] = 2
+        res['response_code'] = 2
 
-    return json.dumps(data)
+    return json.dumps(res)
 
 
 @app.route('/user/roomlist', methods=['POST', 'GET'])
@@ -145,6 +148,31 @@ def room_search():
     elif request.method == 'POST':
         data = request.get_json()
         return search_room(data)
+
+
+@app.route('/user/send', methods=['POST'])
+@fl.login_required
+def send_msg():
+    data =request.get_json()
+    data['account'] = fl.current_user.username
+    data['message'] = data.pop('msg')
+    res = dict()
+    suc = send_message(data, db)
+    if suc == 'success':
+        res['response_code'] = 0
+    else:
+        res['response_code'] = 1
+
+    return json.dumps(res)
+
+
+@app.route('/user/logout', methods=['POST'])
+@fl.login_required
+def logout():
+    fl.logout_user()
+    res = dict()
+    res['response_code'] = 0
+    return json.dumps(res)
 
 
 @login_manager.user_loader
