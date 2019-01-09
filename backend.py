@@ -185,7 +185,7 @@ def my_room():
 
 @app.route('/room/newroom', methods=['GET', 'POST'])
 @fl.login_required
-def new_room:
+def new_room1():
     if request.method == 'GET':
         return render_template('new.html')
 
