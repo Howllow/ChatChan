@@ -96,6 +96,7 @@
     </div>
 </body>
 <script>
+    var user="{{ current_user.username }}"
     $("#confirm").click(function(){
         var old_password=$("#oldpassword").val();
         var new_password=$("#newpassword").val();
@@ -109,17 +110,14 @@
                 url: 'http://localhost:5000/setpassword',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify({ old_password: old_password, new_password: new_password }),
+                data: JSON.stringify({ username: user, old_password: old_password, new_password: new_password }),
                 success: function (res) {
                     console.log(res);
                     if (res['response_code'] == 0) {
                         window.location.href = 'login';
                     }
-                    else if(res['response_code'] == 1) {
-                        alert('error!');
-                    }
                     else{
-                        alert("already exists!");
+                        alert("Error!");
                     }
                 }
             })
