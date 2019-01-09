@@ -102,9 +102,9 @@
         <form role="form" >
             <div class="search-box">
                 <div class="form-group">
-                    <input type="text" class="form-control" placeholder="search...">
+                    <input type="text" class="form-control" placeholder="search..." id="keyword">
                 </div>
-                <button type="button" class="btn btn-info btn-lg">
+                <button type="button" class="btn btn-info btn-lg" id="search">
                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span> 
                 </button>
             </div>
@@ -130,38 +130,124 @@
     </div>
 </body>
 <script>
-    $(".btn").click(function(){
+    var user = "{{ current_user.username }}";
+
+    $("#search").click(function(){
         var type=$("input[name='searchtype']:checked").val();
         userlist=["user1","user2"];
         roomlist=["room1","room2"];
         if(type=='room'){
+            //pretend to get result
             $("#user-list").css("display","none");
             $("#room-list").css("display","unset");
+            $("#room-list").empty();
             for(var i=0; i<roomlist.length;i++){
                 var room=document.createElement("a");
                 room.setAttribute("class","list-group-item");
                 room.setAttribute("href","#");
                 room.innerHTML="<img src='../static/img/room-logo.png' class='room-logo'>" +
                 roomlist[i] +
-                "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-send'></span> Join</button>";
+                "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-log-in'></span> Join</button>";
                 $("#room-list").append(room);
-
             }
+            var keyword = $("#keyword").val();
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/search',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ keyword: keyword, type: type }),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 0) {
+                        $("#user-list").css("display","none");
+                        $("#room-list").css("display","unset");
+                        $("#room-list").empty();
+                        roomlist = res['roomlist'];
+                        for(var i=0; i<roomlist.length;i++){
+                            var room=document.createElement("a");
+                            room.setAttribute("class","list-group-item");
+                            room.setAttribute("href","#");
+                            room.innerHTML="<img src='../static/img/room-logo.png' class='room-logo'>" +
+                                roomlist[i] +
+                                "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-log-in'></span> Join</button>";
+                            $("#room-list").append(room);
+                        }
+                        $(".enter-room").click(function(){ 
+                            var room_name = $(this).parent().attr("id");
+                            //alert(room_name);
+                            window.location.href = 'home.html?room=' + room_name;
+                        })
+                    }
+                    else{
+                        alert("Error!");
+                    }
+                }
+            })
         }
         else{
+            // pretend to do something
             $("#room-list").css("display","none");
             $("#user-list").css("display","unset");
+            $("#user-list").empty();
             for(var i=0; i<userlist.length;i++){
                 var user=document.createElement("a");
                 user.setAttribute("class","list-group-item");
+                user.setAttribute("id",userlist[i])
                 user.setAttribute("href","#");
                 user.innerHTML="<img src='../static/img/user.png' class='user-logo'>" +
-                userlist[i] +
-                "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-send'></span> Chat</button>";
+                    userlist[i] +
+                    "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
                 $("#user-list").append(user);
-
             }
+            $(".enter-room").click(function(){ 
+                var room_name = $(this).parent().attr("id");
+                alert(room_name);
+                window.location.href = 'home.html?room=testroom1';
+            })
+
+            var keyword = $("#keyword").val();
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/search',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ keyword: keyword, type: type }),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 0) {
+                        $("#room-list").css("display","none");
+                        $("#user-list").css("display","unset");
+                        $("#user-list").empty();
+                        userlist = res['userlist'];
+                        for(var i = 0; i < userlist.length; i++){
+                            var user = document.createElement("a");
+                            user.setAttribute("class","list-group-item");
+                            user.setAttribute("href","#");
+                            user.innerHTML = "<img src='../static/img/user.png' class='user-logo'>" +
+                                userlist[i] +
+                                "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
+                            $("#user-list").append(user);
+                        }
+                        $(".enter-room").click(function(){ 
+                            var other_name = $(this).parent().attr("id");
+                            if(other_name > user){
+                                room_name = user + other_name;
+                            }
+                            else{
+                                room_name = other_name + user;
+                            }
+                            //alert(room_name);
+                            window.location.href = 'home.html?room=' + room_name;
+                        })
+                    }
+                    else{
+                        alert("Error!");
+                    }
+                }
+            })
         }
     });
+    
 </script>
 </html>

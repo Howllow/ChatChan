@@ -190,6 +190,14 @@
             $(".room-msg").scrollTop($(".room-msg").height());
             last_room_func = setInterval(get_room_msg,1000,room_name);
         });
+        
+        // if jump from other pages and need to highlight a specific room
+        var Request = new Object();
+        Request = GetRequest(); 
+        var visit_room;
+        visit_room = Request["room"];
+        //alert(visit_room);
+        $("#"+visit_room).click();
     });
 
     function check_update(){
@@ -314,5 +322,18 @@
             })
         }
     })
+    
+    function GetRequest() { 
+        var url = location.search; //获取url中"?"符后的字串 
+        var theRequest = new Object(); 
+        if (url.indexOf("?") != -1) { 
+            var str = url.substr(1); 
+            strs = str.split("&"); 
+            for(var i = 0; i < strs.length; i ++) { 
+                theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
+            } 
+        } 
+        return theRequest; 
+    } 
 </script>
 </html>

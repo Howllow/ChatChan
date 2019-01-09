@@ -43,6 +43,14 @@
             height: 60px;
 
         }
+        .page-header{
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+        form{
+            margin-left: 10%;
+            margin-right: 10%;
+        }
     </style>
 </head>
 <body>
@@ -51,6 +59,7 @@
             <img src="../static/img/chat.png" class="nav-logo" alt="">
             <div class="menu">
                 <ul class="nav navbar-nav">
+                    <li><a href="home.html">Home</a></li>
                     <li><a href="chatroom.html">Chatroom</a></li>
                     <li><a href="find.html">Find</a></li>
                     <li class="dropdown">
@@ -59,7 +68,6 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="info.html">info</a></li>
                             <li><a href="setting.html">setting</a></li>
                             <li class="divider"></li>
                             <li><a href="/user/logout">logout</a></li>
@@ -79,13 +87,39 @@
         <div class="page-header">
             <h1>Create a new room</h1>
         </div>
-        <form role="form">
+        <form role="form" >
             <div class="form-group">
                 <label for="name">room name</label>
                 <input type="text" class="form-control" id="name" placeholder="please input room name">
             </div>
-            <button type="submit" class="btn btn-primary">submit</button>
+            <button type="submit" class="btn btn-primary" id="submit">submit</button>
         </form>
     </div>
 </body>
+<script>
+    $("#submit").click(function(){
+        var room_name = $("#name").val();
+        alert(room_name);
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/create_room',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ roomname: room_name }),
+            success: function (res) {
+                console.log(res);
+                if (res['response_code'] == 0) {
+                    alert("Successfully create a room!");
+                    window.location.href = 'new'
+                }
+                else if(res['response_code'] == 1) {
+                    alert("Room name has already been used!!");
+                }
+                else{
+                    alert("Error!");
+                }
+            }
+        })
+    })
+</script>
 </html>
