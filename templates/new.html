@@ -102,7 +102,7 @@
         alert(room_name);
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/create_room',
+            url: 'http://localhost:5000/room/new',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify({ roomname: room_name }),

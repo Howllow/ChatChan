@@ -138,6 +138,7 @@
         roomlist=["room1","room2"];
         if(type=='room'){
             //pretend to get result
+            /*
             $("#user-list").css("display","none");
             $("#room-list").css("display","unset");
             $("#room-list").empty();
@@ -150,6 +151,7 @@
                 "<button type='button' class='btn btn-info btn-sm'><span class='glyphicon glyphicon-log-in'></span> Join</button>";
                 $("#room-list").append(room);
             }
+            */
             var keyword = $("#keyword").val();
             $.ajax({
                 type: 'POST',
@@ -168,25 +170,45 @@
                             var room=document.createElement("a");
                             room.setAttribute("class","list-group-item");
                             room.setAttribute("href","#");
+                            room.setAttribute("id",roomlist[i])
                             room.innerHTML="<img src='../static/img/room-logo.png' class='room-logo'>" +
                                 roomlist[i] +
-                                "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-log-in'></span> Join</button>";
+                                "<button type='button' class='btn btn-info btn-sm join-room'><span class='glyphicon glyphicon-log-in'></span> Join</button>";
                             $("#room-list").append(room);
                         }
-                        $(".enter-room").click(function(){ 
+                        $(".join-room").click(function(){ 
                             var room_name = $(this).parent().attr("id");
                             //alert(room_name);
-                            window.location.href = 'home.html?room=' + room_name;
+                            $.ajax({
+                                type: 'POST',
+                                url: 'http://localhost:5000/room/join',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: JSON.stringify({ roomname: room_name, username: user }),
+                                success: function (res) {
+                                    console.log(res);
+                                    if (res['response_code'] == 0) { //join a room
+                                        window.location.href = 'home.html?room=' + room_name;
+                                    }
+                                    else if(res['response_code'] == 1){ //already in room?
+                                        window.location.href = 'home.html?room=' + room_name;
+                                    }
+                                    else{
+                                        alert("Error!");
+                                    }
+                                }
+                            })    
                         })
                     }
                     else{
-                        alert("Error!");
+                        alert("Search Error!");
                     }
                 }
             })
         }
         else{
             // pretend to do something
+            /*
             $("#room-list").css("display","none");
             $("#user-list").css("display","unset");
             $("#user-list").empty();
@@ -197,15 +219,15 @@
                 user.setAttribute("href","#");
                 user.innerHTML="<img src='../static/img/user.png' class='user-logo'>" +
                     userlist[i] +
-                    "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
+                    "<button type='button' class='btn btn-info btn-sm join-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
                 $("#user-list").append(user);
             }
-            $(".enter-room").click(function(){ 
+            $(".join-room").click(function(){ 
                 var room_name = $(this).parent().attr("id");
                 alert(room_name);
                 window.location.href = 'home.html?room=testroom1';
             })
-
+            */
             var keyword = $("#keyword").val();
             $.ajax({
                 type: 'POST',
@@ -224,25 +246,44 @@
                             var user = document.createElement("a");
                             user.setAttribute("class","list-group-item");
                             user.setAttribute("href","#");
+                            user.setAttribute("id",userlist[i])
                             user.innerHTML = "<img src='../static/img/user.png' class='user-logo'>" +
                                 userlist[i] +
-                                "<button type='button' class='btn btn-info btn-sm enter-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
+                                "<button type='button' class='btn btn-info btn-sm join-room'><span class='glyphicon glyphicon-send'></span> Chat</button>";
                             $("#user-list").append(user);
                         }
-                        $(".enter-room").click(function(){ 
+                        $(".join-room").click(function(){ 
                             var other_name = $(this).parent().attr("id");
                             if(other_name > user){
-                                room_name = user + other_name;
+                                room_name = user + " " + other_name;
                             }
                             else{
-                                room_name = other_name + user;
+                                room_name = other_name + " " + user;
                             }
                             //alert(room_name);
-                            window.location.href = 'home.html?room=' + room_name;
+                            $.ajax({
+                                type: 'POST',
+                                url: 'http://localhost:5000/room/new',
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                data: JSON.stringify({ roomname: room_name }),
+                                success: function (res) {
+                                    console.log(res);
+                                    if (res['response_code'] == 0) { //join a room
+                                        window.location.href = 'home.html?room=' + room_name;
+                                    }
+                                    else if(res['response_code'] == 1){ //already has the room?
+                                        window.location.href = 'home.html?room=' + room_name;
+                                    }
+                                    else{
+                                        alert("Error!");
+                                    }
+                                }
+                            })    
                         })
                     }
                     else{
-                        alert("Error!");
+                        alert("Search Error!");
                     }
                 }
             })

@@ -92,9 +92,9 @@
         <div class="list-group">
             {% for room in roomlist %}
                 <a href="#" class="list-group-item roomlist-item" id="{{ room.id }}">
-                    <img src="../static/img/room-logo.png" class="room-logo">
+                    <img src="../static/img/room-logo.png" class="room-logo" id="{{ room.name }}">
                     {{ room.name }}
-                    <button type="button" class="btn btn-info btn-sm">
+                    <button type="button" class="btn btn-info btn-sm" id="#leave">
                         <span class="glyphicon glyphicon-log-out"></span> Leave
                     </button>
                 </a>
@@ -102,4 +102,26 @@
         </div>
     </div>
 </body>
+<script>
+    var user = "{{ current_user.username }}"
+    $("#leave").click(function(){
+        var room_name = $(this).parent().attr("id");
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/room/leave',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ username: user, roomname: room_name}),
+            success: function (res) {
+                console.log(res);
+                if (res['response_code'] == 0) {
+                    window.location.href = 'chatroom.html';
+                }
+                else{
+                    alert("Error!");
+                }
+            }
+        })
+    })
+</script>
 </html>
