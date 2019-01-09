@@ -132,7 +132,9 @@
                 data: JSON.stringify({ username: _username, password: _password }),
                 success: function (res) {
                     console.log(res);
+                   
                     if (res['response_code'] == 0) {
+                        
                         window.location.href = 'home'
                     }
                     else if(res['response_code'] == 1) {
