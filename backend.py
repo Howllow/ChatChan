@@ -166,7 +166,7 @@ def send_msg():
     return json.dumps(res)
 
 
-@app.route('/user/logout', methods=['POST'])
+@app.route('/user/logout', methods=['POST', 'GET'])
 @fl.login_required
 def logout():
     fl.logout_user()
