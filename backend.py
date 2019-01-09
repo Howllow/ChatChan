@@ -1,3 +1,11 @@
+# -*- coding:utf-8 _*-
+"""
+@author:howllow(jinqingzhe)
+@file: backend.py
+@time: 2019/1/9
+@contact: 1600012896@pku.edu.cn
+
+"""
 from flask import *
 from flask_socketio import *
 from db.mydb import *
@@ -66,7 +74,6 @@ def login():
             flash('Login Success')
             res['response_code'] = 0
 
-
         elif log_message == 'account not found':
             res['response_code'] = 1
 
@@ -76,22 +83,12 @@ def login():
         return json.dumps(res)
 
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET'])
 @fl.login_required
 def home():
     if request.method == 'GET':
-        #rooms = somerooms(fl.current_user.username)
         print(fl.current_user.username)
-        return render_template('home.html') #roomlist = rooms)
-
-    else:
-        res = dict()
-        data = dict()
-        data['username'] = fl.current_user.username
-        #res['room_list'] = get_room_name_from_username(data, db)
-        res['room_list'] = get_all_room_names(db)
-        res['response_code'] = 0
-        return json.dumps(res)
+        return render_template('home.html')
 
 
 @app.route('/room/msg', methods=['GET'])
@@ -104,12 +101,15 @@ def get_msg():
     return json.dumps(res)
 
 
-@app.route('/room/new', methods=['POST'])
+@app.route('/create_room', methods=['POST'])
 @fl.login_required
 def new_room():
     data = request.get_json()
-    flag = create_chatroom(data, db)
     res = dict()
+    prefix = '[G]'
+    data['roomname'] += prefix
+    flag = create_chatroom(data, db)
+
     if flag == 'success':
         res['response_code'] = 0
 
@@ -126,18 +126,25 @@ def new_room():
 @fl.login_required
 def recent_room():
     if request.method == 'POST':
+        res = dict()
         data = request.get_json()
-        return room_lst(data)
+        usrname = data['username']
+        lst = get_room_by_name(usrname)
+        res['roomlist'] = lst
+        res['response_code'] = 0
+        return json.dumps(res)
 
 
-@app.route('/user/setting', methods=['POST', 'GET'])
+@app.route('/setpassword', methods=['POST', 'GET'])
 @fl.login_required
 def usr_set():
     if request.method == 'GET':
         return render_template('setting.html')
     elif request.method == 'POST':
+        res = dict()
         data = request.get_json()
-        return change_pwd(data)
+        res['response_code'] = change_pwd(data, db)
+        return json.dumps(res)
 
 
 @app.route('/room/search', methods=['POST', 'GET'])
@@ -146,14 +153,47 @@ def room_search():
     if request.method == 'GET':
         return render_template('find.html')
     elif request.method == 'POST':
+        res = dict()
         data = request.get_json()
-        return search_room(data)
+        typ = data['type']
+        keyword = data['keyword']
+        res['response_code'] = 1
+        if typ == 'room':
+            res['roomlist'] = find_room(keyword, db)
+            res['response_code'] = 0
+        else:
+            res['userlist'] = find_user(keyword, db)
+            res['response_code'] = 0
+
+        return json.dumps(res)
+
+
+@app.route('/user/myroom', methods=['GET'])
+@fl.login_required
+def my_room():
+    if request.method == 'GET':
+        usrname = fl.current_user.username
+        lsts = get_room_by_name(usrname)
+        rooms = []
+        for i in range(len(lsts)):
+            lst = lsts[i]
+            roomname = lst[0]
+            if roomname[0:3] == '[G]':
+                rooms.append(roomname)
+        return render_template('chatroom.html', roomlist=rooms)
+
+
+@app.route('/room/newroom', methods=['GET', 'POST'])
+@fl.login_required
+def new_room:
+    if request.method == 'GET':
+        return render_template('new.html')
 
 
 @app.route('/user/send', methods=['POST'])
 @fl.login_required
 def send_msg():
-    data =request.get_json()
+    data = request.get_json()
     data['account'] = fl.current_user.username
     data['message'] = data.pop('msg')
     res = dict()
