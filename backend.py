@@ -265,9 +265,10 @@ def leave_room():
 @fl.login_required
 def join_room():
     data = request.get_json()
-    data['account'] = data.pop('username')
+    data['account'] = fl.current_user.username
     data['room_name'] = data.pop('roomname')
     flag = enter_chatroom(data, db)
+    print(data)
     res = dict()
     res['response_code'] = 2
     if flag == 'success':
