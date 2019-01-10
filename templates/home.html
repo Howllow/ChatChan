@@ -106,9 +106,7 @@
     </nav>
     <div class="sidebar col-md-2">
         <div class="list-group" id="room-list">
-            <a href="#" class="list-group-item" id="testroom1">testroom1
-                <span class="glyphicon glyphicon-bell" ></span>
-            </a>
+            
         </div>
     </div>
     <div class="chat-panel col-md-10" style="visibility:hidden ">
@@ -131,18 +129,11 @@
 </body>
 <script>
     var roomlist=[];
-    var last_room_func;
+    var last_room_func=-1;
     var user="{{current_user.username}}";
     $(document).ready(function(){
         setInterval("check_update()",1000);
-        // test add a room
-        var room = document.createElement("a");
-        room.setAttribute("class","list-group-item");
-        room.setAttribute("href","#");
-        room.setAttribute("id","testroom2")
-        room.innerHTML = "testroom2" + 
-            "<span class='glyphicon glyphicon-bell'></span>";
-        $("#room-list").append(room);
+        
         
         //get roomlist
         
@@ -158,7 +149,7 @@
                     roomlist = res['roomlist'];
                     for(var i = 0; i < roomlist.length; i++){
                         var room = document.createElement('a');
-                        room.addClass("list-group-item");
+                        room.setAttribute("class","list-group-item");
                         room.setAttribute("href","#");
                         room.setAttribute("id",roomlist[i][0])
                         room.innerHTML = roomlist[i][0] +
@@ -174,7 +165,9 @@
         
         // if click the room, we should start pulling msg
         $(".list-group-item").click(function(){
-            clearInterval(last_room_func); // stop other room pulling
+            if(last_room_func != -1){
+                clearInterval(last_room_func); // stop other room pulling
+            }
             var room_name = this.text;
             $(this).siblings().removeClass("active");
             $(this).addClass("active");

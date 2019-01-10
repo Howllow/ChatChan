@@ -134,9 +134,10 @@
     </div>
 </body>
 <script>
-    var user = "{{ current_user.username }}";
-
+    
     $("#search").click(function(){
+        var username = "{{ current_user.username }}";
+        //alert(user);
         var type=$("input[name='searchtype']:checked").val();
         userlist=["user1","user2"];
         roomlist=["room1","room2"];
@@ -222,13 +223,13 @@
                         }
                         $(".join-room").click(function(){ 
                             var other_name = $(this).parent().attr("id");
-                            if(other_name > user){
-                                room_name = user + "&" + other_name;
+                            if(other_name > username){
+                                room_name = username + "&" + other_name;
                             }
                             else{
-                                room_name = other_name + "&" + user;
+                                room_name = other_name + "&" + username;
                             }
-                            //alert(room_name);
+                            alert(room_name);
                             $.ajax({
                                 type: 'POST',
                                 url: 'http://localhost:5000/room/create_chat',
