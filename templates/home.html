@@ -162,7 +162,7 @@
                         roomid = roomlist[i][0];
                         room.setAttribute("id",roomid)
                         room.innerHTML = roomlist[i][0] +
-                            "<span class='glyphicon glyphicon-bell'></span>";
+                            "<span class='glyphicon glyphicon-bell' style='visibility: hidden'></span>";
                         $("#room-list").append(room);
                     }
 
@@ -218,8 +218,18 @@
                 console.log(res);
                 if (res['response_code'] == 0) {
                     var new_roomlist = res['roomlist'];
+                    var rooms=$("#room-list").children();
+                    // get room name
+                    for(var i=0; i<rooms.length; i++){               
+                        if(rooms[i].getAttribute("class").indexOf("active")>-1){
+                            selected_room=rooms[i].innerText;
+                        }
+                    }
                     for(var i = 0; i < new_roomlist.length; i++){
                         var room_name = new_roomlist[i][0];
+                        if(room_name == selected_room){
+                            continue;
+                        }
                         var old_update_time;
                         var room_exist = false;
                         for(var i = 0;i < roomlist.length;i++){
