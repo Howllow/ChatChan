@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="chat">
-  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.7">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.8">
     <root id="1">
       <DefaultCasing>exact</DefaultCasing>
     </root>
@@ -918,13 +918,13 @@
     </table>
     <column id="230" parent="226" name="room_name">
       <Position>1</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="231" parent="226" name="create_time">
       <Position>2</Position>
-      <DataType>datetime|0</DataType>
+      <DataType>datetime|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <key id="232" parent="226" name="PRIMARY">
@@ -934,62 +934,62 @@
     </key>
     <column id="233" parent="227" name="account">
       <Position>1</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="234" parent="227" name="room_name">
       <Position>2</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="235" parent="227" name="enter_time">
       <Position>3</Position>
-      <DataType>datetime|0</DataType>
+      <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="236" parent="227" name="if_active">
       <Position>4</Position>
-      <DataType>tinyint(1)|0</DataType>
+      <DataType>tinyint(1)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="237" parent="228" name="account">
       <Position>1</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
       <Collation>latin1_swedish_ci</Collation>
     </column>
     <column id="238" parent="228" name="room_name">
       <Position>2</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
       <Collation>latin1_swedish_ci</Collation>
     </column>
     <column id="239" parent="228" name="message">
       <Position>3</Position>
-      <DataType>text|0</DataType>
+      <DataType>text|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="240" parent="228" name="send_time">
       <Position>4</Position>
-      <DataType>datetime|0</DataType>
+      <DataType>datetime|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="241" parent="229" name="account">
       <Position>1</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="242" parent="229" name="password">
       <Position>2</Position>
-      <DataType>varchar(20)|0</DataType>
+      <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="243" parent="229" name="register_date">
       <Position>3</Position>
-      <DataType>datetime|0</DataType>
+      <DataType>datetime|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>

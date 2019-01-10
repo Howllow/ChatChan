@@ -101,12 +101,33 @@ def get_msg():
     return json.dumps(res)
 
 
-@app.route('/create_room', methods=['POST'])
+@app.route('/room/create_room', methods=['POST'])
 @fl.login_required
 def new_room():
     data = request.get_json()
     res = dict()
     prefix = '[G]'
+    data['roomname'] += prefix
+    flag = create_chatroom(data, db)
+
+    if flag == 'success':
+        res['response_code'] = 0
+
+    elif flag == 'duplicate':
+        res['response_code'] = 1
+
+    else:
+        res['response_code'] = 2
+
+    return json.dumps(res)
+
+
+@app.route('/room/create_chat', methods=['POST'])
+@fl.login_required
+def new_chat():
+    data = request.get_json()
+    res = dict()
+    prefix = '[P]'
     data['roomname'] += prefix
     flag = create_chatroom(data, db)
 
@@ -148,7 +169,7 @@ def usr_set():
         return json.dumps(res)
 
 
-@app.route('/room/search', methods=['POST', 'GET'])
+@app.route('/search', methods=['POST', 'GET'])
 @fl.login_required
 def room_search():
     if request.method == 'GET':
@@ -158,23 +179,25 @@ def room_search():
         data = request.get_json()
         typ = data['type']
         keyword = data['keyword']
+        prefix = '[G]'
         res['response_code'] = 1
         if typ == 'room':
-            res['roomlist'] = find_room(keyword, db)
+            res['roomlist'] = find_room(prefix + keyword, db)
             res['response_code'] = 0
         else:
             res['userlist'] = find_name(keyword, db)
+            print(res['userlist'])
             res['response_code'] = 0
 
         return json.dumps(res)
 
 
-@app.route('/user/myroom', methods=['GET'])
+@app.route('/room/myroom', methods=['GET'])
 @fl.login_required
 def my_room():
     if request.method == 'GET':
         usrname = fl.current_user.username
-        lsts = get_room_by_name(usrname)
+        lsts = get_room_by_name(usrname, db)
         rooms = []
         for i in range(len(lsts)):
             lst = lsts[i]
