@@ -268,18 +268,18 @@
                     $(".chat-panel").css("visibility","visible")
                     $(".room-info").text(room_name)
                     $(".room-msg").empty();
-                    var msglist=res['msglist'];
+                    var msglist=res['msg_list'];
                     if(msglist){
                         for(var i=0; i<msglist.length;i++){
                             var msg=document.createElement("p");
                             var msg_account=msglist[i]['account']
                             if(msg_account == user){ // my own msg
                                 msg.setAttribute("class","my-msg");
-                                msg.innerText=msglist[i]['msg']+":"+user;
+                                msg.innerText=msglist[i]['message']+":"+user;
                             }
                             else{ // others' msg
                                 msg.setAttribute("class","others-msg")
-                                msg.innerText=msg_account+":"+msglist[i]['msg'];
+                                msg.innerText=msg_account+":"+msglist[i]['message'];
                             }
                             $(".room-msg").append(msg);
                         }
