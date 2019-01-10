@@ -96,6 +96,7 @@ def home():
 def get_msg():
     data = request.get_json()
     res = dict()
+    data['room_name'] = data.pop('roomname')
     res['msg_list'] = get_messages_from_room_name(data, db)
     res['response_code'] = 0
     return json.dumps(res)
@@ -113,7 +114,6 @@ def new_room():
     enter['room_name'] = data['room_name']
     enter['account'] = fl.current_user.username
     flag = create_chatroom(data, db)
-    print(flag)
     if flag == 'success':
         res['response_code'] = 0
         enter_chatroom(enter, db)
@@ -140,7 +140,7 @@ def new_chat():
     prefix = '[P]'
     data['roomname'] = prefix + data['roomname']
     data['room_name'] = data.pop('roomname')
-    other = data['other_name']
+    other = data['othername']
     enter_me = dict()
     enter_other = dict()
     enter_me['account'] = fl.current_user.username
@@ -175,10 +175,13 @@ def recent_room():
         res = dict()
         data = request.get_json()
         usrname = data['username']
+        print(usrname)
         lst = get_room_by_name(usrname, db)
-        res['roomlist'] = lst
+        print(lst)
+        lst = [[a, b] for (a, b) in lst]
         for ls in lst:
             ls[1] = str(ls[1])
+        res['roomlist'] = lst
         res['response_code'] = 0
         return json.dumps(res)
 
@@ -191,10 +194,8 @@ def usr_set():
     elif request.method == 'POST':
         res = dict()
         data = request.get_json()
-        print(data)
         data['account'] = data.pop('username')
         flag = change_pwd(data, db)
-        print(flag)
         if flag == 'success':
             res['response_code'] = 0
         elif flag == 'Wrong password':
@@ -219,7 +220,6 @@ def room_search():
             res['response_code'] = 0
         else:
             res['userlist'] = find_name(keyword, db)
-            print(res['userlist'])
             res['response_code'] = 0
 
         return json.dumps(res)
@@ -232,14 +232,11 @@ def my_room():
         usrname = fl.current_user.username
         lsts = get_room_by_name(usrname, db)
         rooms = []
-        print(usrname)
-        print(lsts)
         for i in range(len(lsts)):
             lst = lsts[i]
             roomname = lst[0]
             if roomname[0:3] == '[G]':
                 rooms.append(roomname)
-        print(rooms)
         return render_template('chatroom.html', roomlist=rooms)
 
 
@@ -270,7 +267,6 @@ def join_room():
     data = request.get_json()
     data['account'] = data.pop('username')
     data['room_name'] = data.pop('roomname')
-    print(data)
     flag = enter_chatroom(data, db)
     res = dict()
     res['response_code'] = 2

@@ -172,9 +172,9 @@ def enter_chatroom(data: Dict[str, str], conn: Connection):
 
     """
 
-    cursor = conn.cursor()
-
     members = get_members_from_room_name(data, conn)
+
+    cursor = conn.cursor()
 
     if data['account'] in members:
     	return 'duplicate'
