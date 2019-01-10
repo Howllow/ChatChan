@@ -88,7 +88,7 @@
                 <a href="#" class="list-group-item roomlist-item" id="{{ room }}">
                     <img src="../static/img/room-logo.png" class="room-logo">
                     {{ room }}
-                    <button type="button" class="btn btn-info btn-sm" id="#leave">
+                    <button type="button" class="btn btn-info btn-sm" id="leave">
                         <span class="glyphicon glyphicon-log-out"></span> Leave
                     </button>
                 </a>
@@ -97,26 +97,29 @@
     </div>
 </body>
 <script>
-    var user = "{{ current_user.username }}"
-    $("#leave").click(function(){
-        var room_name = $(this).parent().attr("id");
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/room/leave',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify({ username: user, roomname: room_name}),
-            success: function (res) {
-                console.log(res);
-                if (res['response_code'] == 0) {
-                    alert("success!");
-                    window.location.href = '/room/myroom';
+    var user = "{{ current_user.username }}";
+    $(document).ready(function(){
+        $("#leave").click(function(){
+            var room_name = $(this).parent().attr("id");
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:5000/room/leave',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ username: user, roomname: room_name}),
+                success: function (res) {
+                    console.log(res);
+                    if (res['response_code'] == 0) {
+                        alert("success!");
+                        window.location.href = '/room/myroom';
+                    }
+                    else{
+                        alert("Error!");
+                    }
                 }
-                else{
-                    alert("Error!");
-                }
-            }
+            })
         })
     })
+    
 </script>
 </html>
