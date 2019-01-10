@@ -110,7 +110,7 @@
             url: 'http://localhost:5000/room/create_room',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: JSON.stringify({ username: user, roomname: room_name }),
+            data: JSON.stringify({ roomname: room_name }),
             success: function (res) {
                 console.log(res);
                 if (res['response_code'] == 0) {

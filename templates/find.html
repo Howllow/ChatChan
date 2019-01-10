@@ -140,8 +140,8 @@
         var type=$("input[name='searchtype']:checked").val();
         userlist=["user1","user2"];
         roomlist=["room1","room2"];
+        var keyword = $("#keyword").val();
         if(type=='room'){
-            var keyword = $("#keyword").val();
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:5000/search',
@@ -197,7 +197,6 @@
             })
         }
         else{
-            var keyword = $("#keyword").val();
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:5000/search',
@@ -235,7 +234,7 @@
                                 url: 'http://localhost:5000/room/create_chat',
                                 contentType: "application/json; charset=utf-8",
                                 dataType: "json",
-                                data: JSON.stringify({ username: user, roomname: room_name }),
+                                data: JSON.stringify({ username: user, othername: other_name }),
                                 success: function (res) {
                                     if (res['response_code'] == 0) { //join a room
                                         alert("create a new chat!");
@@ -259,5 +258,10 @@
         }
     });
     
+    $(".search-box").keydown(function(e) {
+        if(e.keyCode=='13') {
+            $("#search").click();
+        }
+    })
 </script>
 </html>

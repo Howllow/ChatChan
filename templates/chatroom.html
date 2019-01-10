@@ -85,9 +85,9 @@
     <div class="container-main">   
         <div class="list-group">
             {% for room in roomlist %}
-                <a href="#" class="list-group-item roomlist-item" id="{{ room.id }}">
-                    <img src="../static/img/room-logo.png" class="room-logo" id="{{ room.name }}">
-                    {{ room.name }}
+                <a href="#" class="list-group-item roomlist-item" id="{{ room }}">
+                    <img src="../static/img/room-logo.png" class="room-logo">
+                    {{ room }}
                     <button type="button" class="btn btn-info btn-sm" id="#leave">
                         <span class="glyphicon glyphicon-log-out"></span> Leave
                     </button>
