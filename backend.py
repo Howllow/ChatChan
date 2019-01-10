@@ -106,12 +106,22 @@ def get_msg():
 def new_room():
     data = request.get_json()
     res = dict()
+    enter = dict()
     prefix = '[G]'
-    data['roomname'] += prefix
+    data['roomname'] = prefix + data['roomname']
+    data['room_name'] = data.pop('roomname')
+    enter['room_name'] = data['room_name']
+    enter['account'] = fl.current_user.username
     flag = create_chatroom(data, db)
-
+    print(flag)
     if flag == 'success':
         res['response_code'] = 0
+        enter_chatroom(enter, db)
+        msg = dict()
+        msg['account'] = fl.current_user.username
+        msg['room_name'] = data['room_name']
+        msg['message'] = 'Welcome to my chatroom!'
+        send_message(msg, db)
 
     elif flag == 'duplicate':
         res['response_code'] = 1
@@ -128,11 +138,26 @@ def new_chat():
     data = request.get_json()
     res = dict()
     prefix = '[P]'
-    data['roomname'] += prefix
+    data['roomname'] = prefix + data['roomname']
+    data['room_name'] = data.pop('roomname')
+    other = data['other_name']
+    enter_me = dict()
+    enter_other = dict()
+    enter_me['account'] = fl.current_user.username
+    enter_other['account'] = other
+    enter_me['room_name'] = data['room_name']
+    enter_other['room_name'] = data['room_name']
     flag = create_chatroom(data, db)
 
     if flag == 'success':
         res['response_code'] = 0
+        enter_chatroom(enter_me, db)
+        enter_chatroom(enter_other, db)
+        msg = dict()
+        msg['account'] = fl.current_user.username
+        msg['room_name'] = data['room_name']
+        msg['message'] = 'Nice to meet you!'
+        send_message(msg, db)
 
     elif flag == 'duplicate':
         res['response_code'] = 1
@@ -152,6 +177,8 @@ def recent_room():
         usrname = data['username']
         lst = get_room_by_name(usrname, db)
         res['roomlist'] = lst
+        for ls in lst:
+            ls[1] = str(ls[1])
         res['response_code'] = 0
         return json.dumps(res)
 
@@ -164,8 +191,14 @@ def usr_set():
     elif request.method == 'POST':
         res = dict()
         data = request.get_json()
+        print(data)
         data['account'] = data.pop('username')
-        res['response_code'] = change_pwd(data, db)
+        flag = change_pwd(data, db)
+        print(flag)
+        if flag == 'success':
+            res['response_code'] = 0
+        elif flag == 'Wrong password':
+            res['response_code'] = 1
         return json.dumps(res)
 
 
@@ -199,11 +232,14 @@ def my_room():
         usrname = fl.current_user.username
         lsts = get_room_by_name(usrname, db)
         rooms = []
+        print(usrname)
+        print(lsts)
         for i in range(len(lsts)):
             lst = lsts[i]
             roomname = lst[0]
             if roomname[0:3] == '[G]':
                 rooms.append(roomname)
+        print(rooms)
         return render_template('chatroom.html', roomlist=rooms)
 
 
@@ -233,11 +269,15 @@ def leave_room():
 def join_room():
     data = request.get_json()
     data['account'] = data.pop('username')
+    data['room_name'] = data.pop('roomname')
+    print(data)
     flag = enter_chatroom(data, db)
     res = dict()
-    res['response_code'] = 1
+    res['response_code'] = 2
     if flag == 'success':
         res['response_code'] = 0
+    elif flag == 'duplicate':
+        res['response_code'] = 1
     return json.dumps(res)
 
 

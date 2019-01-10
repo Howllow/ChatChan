@@ -143,7 +143,17 @@ def create_chatroom(data: Dict[str, str], conn: Connection):
     return 'success'
 
 
+def get_members_from_room_name(data: Dict[str, str], conn: Connection):
+    cursor = conn.cursor()
 
+    sql = F"select account from chatting where room_name = '{data['room_name']}' and if_active = 1"
+
+    cursor.execute(sql)
+    users = cursor.fetchall()
+
+    cursor.close()
+
+    return [a[0] for a in users]
 
 
 def enter_chatroom(data: Dict[str, str], conn: Connection):
@@ -163,6 +173,12 @@ def enter_chatroom(data: Dict[str, str], conn: Connection):
     """
 
     cursor = conn.cursor()
+
+    members = get_members_from_room_name(data, conn)
+
+    if data['account'] in members:
+    	return 'duplicate'
+
     dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     sql = F"insert into chatting(account, room_name, enter_time, if_active) " \
         F"value ('{data['account']}', '{data['room_name']}', '{dt}', 1)"
@@ -249,18 +265,6 @@ def get_messages_from_room_name(data: Dict[str, str], conn: Connection):
 
     return messages
 
-
-def get_members_from_room_name(data: Dict[str, str], conn: Connection):
-    cursor = conn.cursor()
-
-    sql = F"select account from chatting where room_name = '{data['room_name']}' and if_active = 1"
-
-    cursor.execute(sql)
-    users = cursor.fetchall()
-
-    cursor.close()
-
-    return [a[0] for a in users]
 
 
 def get_all_room_names(conn: Connection):
