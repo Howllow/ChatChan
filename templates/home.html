@@ -180,17 +180,7 @@
                         $(".chat-panel").css("visibility","visible")
                         $(".room-info").text(room_name)
                         $(".room-msg").empty();
-                        //pretend to get room msg
-                        /*
-                        var msglist=['str1','str2','str3'];
-                        for(var i=0; i<msglist.length;i++){
-                            var msg=document.createElement("p");
-                            msg.innerText=msglist[i];
-                            msg.setAttribute("class","my-msg");
-                            $(".room-msg").append(msg);
-                        }
-                        $(".room-msg").scrollTop($(".room-msg").height());
-                        */
+                        
                         get_room_msg(room_name);
                         last_room_func = setInterval(get_room_msg,1000,room_name);
                     });
@@ -219,7 +209,8 @@
                 if (res['response_code'] == 0) {
                     var new_roomlist = res['roomlist'];
                     var rooms=$("#room-list").children();
-                    // get room name
+                    // get selected room name
+                    var selected_room = "lazynooneusethisname";
                     for(var i=0; i<rooms.length; i++){               
                         if(rooms[i].getAttribute("class").indexOf("active")>-1){
                             selected_room=rooms[i].innerText;
@@ -267,6 +258,24 @@
                             $("#room-list").append(room);
                         }
                     }
+                    // load click event
+                    $(".list-group-item").click(function(){
+                        if(last_room_func != -1){
+                            clearInterval(last_room_func); // stop other room pulling
+                        }
+                        
+                        var room_name = this.text;
+                        $(this).siblings().removeClass("active");
+                        $(this).addClass("active");
+                        $(this).find(".glyphicon-bell").css("visibility","hidden")
+
+                        $(".chat-panel").css("visibility","visible")
+                        $(".room-info").text(room_name)
+                        $(".room-msg").empty();
+                        
+                        get_room_msg(room_name);
+                        last_room_func = setInterval(get_room_msg,1000,room_name);
+                    });
                     roomlist=new_roomlist;
                 }
                 else {
