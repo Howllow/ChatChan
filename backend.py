@@ -95,11 +95,13 @@ def home():
 @app.route('/room/msg', methods=['GET', 'POST'])
 @fl.login_required
 def get_msg():
+    db3 = pymysql.connect(**config)
     data = request.get_json()
     res = dict()
     data['room_name'] = data.pop('roomname')
-    res['msglist'] = get_messages_from_room_name(data, db2)
+    res['msglist'] = get_messages_from_room_name(data, db3)
     res['response_code'] = 0
+    print(res['msglist'])
     return json.dumps(res)
 
 
@@ -173,11 +175,12 @@ def new_chat():
 @fl.login_required
 def recent_room():
     if request.method == 'POST':
+        db4 = pymysql.connect(**config)
         res = dict()
         data = request.get_json()
         usrname = data['username']
         print(usrname)
-        lst = get_room_by_name(usrname, db1)
+        lst = get_room_by_name(usrname, db4)
         print(lst)
         lst = [[a, b] for (a, b) in lst]
         for ls in lst:
