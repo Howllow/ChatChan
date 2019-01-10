@@ -136,11 +136,12 @@
         var room = document.createElement('a');
         room.setAttribute("class","list-group-item");
         room.setAttribute("href","#");
-        room.setAttribute("id","123_czy")
+        room.setAttribute("id","[P]123")
         room.innerHTML = "123&czy" +
             "<span class='glyphicon glyphicon-bell'></span>";
         $("#room-list").append(room);
-        var room_old = $("#room-list").find("#123_czy");
+        //var room_old = $("#room-list").find("#123_czy");
+        enterPage();
         */
         setInterval("check_update()",1000);
         //get roomlist
@@ -164,9 +165,9 @@
                             "<span class='glyphicon glyphicon-bell'></span>";
                         $("#room-list").append(room);
                     }
+
                     // if click the room, we should start pulling msg
                     $(".list-group-item").click(function(){
-                        console.log("s");
                         if(last_room_func != -1){
                             clearInterval(last_room_func); // stop other room pulling
                         }
@@ -180,6 +181,7 @@
                         $(".room-info").text(room_name)
                         $(".room-msg").empty();
                         //pretend to get room msg
+                        /*
                         var msglist=['str1','str2','str3'];
                         for(var i=0; i<msglist.length;i++){
                             var msg=document.createElement("p");
@@ -188,8 +190,12 @@
                             $(".room-msg").append(msg);
                         }
                         $(".room-msg").scrollTop($(".room-msg").height());
+                        */
                         last_room_func = setInterval(get_room_msg,1000,room_name);
                     });
+                    
+                    // if visit the page with a param, deal with it 
+                    enterPage();
         
                 }
                 else {
@@ -198,12 +204,6 @@
             }
         })
         
-        // if jump from other pages and need to highlight a specific room
-        var Request = new Object();
-        Request = GetRequest(); 
-        var visit_room;
-        visit_room = Request["room"];
-        $("#"+visit_room).click();
     });
 
     function check_update(){
@@ -329,12 +329,33 @@
         }
     })
     
+    function enterPage(){
+        // if jump from other pages and need to highlight a specific room
+        var Request = new Object();
+        Request = GetRequest(); 
+        var visit_room;
+        visit_room = Request["room"];
+        console.log(visit_room);
+        var rooms = $("#room-list").children();
+        for(var i = 0; i < rooms.length; i++){
+            var room_item = rooms[i];
+            var room_name = room_item.getAttribute("id");
+            //console.log(room_name);
+            if(visit_room == room_name){
+                //console.log("click");
+                room_item.click();
+                break;
+            }
+        }
+        //$("#"+visit_room).click();
+    }
+
     function GetRequest() { 
         var url = location.search; //获取url中"?"符后的字串 
         var theRequest = new Object(); 
         if (url.indexOf("?") != -1) { 
             var str = url.substr(1); 
-            strs = str.split("&"); 
+            strs = str.split(","); 
             for(var i = 0; i < strs.length; i ++) { 
                 theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]); 
             } 
