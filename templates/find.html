@@ -239,10 +239,10 @@
                                 success: function (res) {
                                     if (res['response_code'] == 0) { //join a room
                                         alert("create a new chat!");
-                                        window.location.href = '/home?room=' + room_name;
+                                        window.location.href = '/home?room=[P]' + room_name;
                                     }
                                     else if(res['response_code'] == 1){ //already has the room?
-                                        window.location.href = '/home?room=' + room_name;
+                                        window.location.href = '/home?room=[P]' + room_name;
                                     }
                                     else{
                                         alert("Error!");

@@ -168,7 +168,10 @@
 
                     // if click the room, we should start pulling msg
                     $(".list-group-item").click(function(){
+                        $(".room-msg").empty();
+                        //console.log("last_room_func=",last_room_func);
                         if(last_room_func != -1){
+                            //console.log("clear");
                             clearInterval(last_room_func); // stop other room pulling
                         }
                         
@@ -366,7 +369,7 @@
         Request = GetRequest(); 
         var visit_room;
         visit_room = Request["room"];
-        console.log(visit_room);
+        //console.log(visit_room);
         var rooms = $("#room-list").children();
         for(var i = 0; i < rooms.length; i++){
             var room_item = rooms[i];
