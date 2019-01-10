@@ -191,6 +191,7 @@
                         }
                         $(".room-msg").scrollTop($(".room-msg").height());
                         */
+                        get_room_msg(room_name);
                         last_room_func = setInterval(get_room_msg,1000,room_name);
                     });
                     
@@ -231,7 +232,16 @@
                         if(room_exist){ // the room already exists, check if it has new msg
                             var new_update_time = new_roomlist[i][1];
                             if(new_update_time != old_update_time){
-                                room_old.find(".glyphicon-bell").css("visibility","visible")
+                                var rooms = $("#room-list").children();
+                                for(var i = 0; i < rooms.length; i++){
+                                    var room_item = rooms[i];
+                                    var old_room_name = room_item.getAttribute("id");
+                                    //console.log(old_room_name);
+                                    if(old_room_name == room_name){
+                                        room_item.find(".glyphicon-bell").css("visibility","visible");
+                                        break;
+                                    }
+                                }
                             }
                         }
                         else{ // this is a new room
@@ -268,7 +278,7 @@
                     $(".chat-panel").css("visibility","visible")
                     $(".room-info").text(room_name)
                     $(".room-msg").empty();
-                    var msglist=res['msg_list'];
+                    var msglist=res['msglist'];
                     if(msglist){
                         for(var i=0; i<msglist.length;i++){
                             var msg=document.createElement("p");
