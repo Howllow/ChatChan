@@ -83,16 +83,6 @@
         </div>
     </div>
     <div class="container-main">   
-        <div class="list-group" style="display:none">
-            <a href="#" class="list-group-item roomlist-item">
-                <img src="../static/img/room-logo.png" class="room-logo">
-                room1
-            </a>
-            <a href="#" class="list-group-item roomlist-item">room2</a>
-            <a href="#" class="list-group-item roomlist-item">room3</a>
-            <a href="#" class="list-group-item roomlist-item">room4</a>
-            <a href="#" class="list-group-item roomlist-item">room5</a>
-        </div>
         <div class="list-group">
             {% for room in roomlist %}
                 <a href="#" class="list-group-item roomlist-item" id="{{ room.id }}">
@@ -119,7 +109,8 @@
             success: function (res) {
                 console.log(res);
                 if (res['response_code'] == 0) {
-                    window.location.href = '/chatroom';
+                    alert("success!");
+                    window.location.href = '/room/myroom';
                 }
                 else{
                     alert("Error!");

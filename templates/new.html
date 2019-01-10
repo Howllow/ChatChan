@@ -104,7 +104,7 @@
     var user = "{{ current_user.username }}"
     $("#submit").click(function(){
         var room_name = $("#name").val();
-        alert(room_name);
+        //alert(room_name);
         $.ajax({
             type: 'POST',
             url: 'http://localhost:5000/room/create_room',
