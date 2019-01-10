@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1812713e-c559-416e-8e88-3326a326859d" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/ChatChan$backend.coverage" NAME="backend Coverage Results" MODIFIED="1547130618932" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/ChatChan$backend.coverage" NAME="backend Coverage Results" MODIFIED="1547131055415" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatChan$server.coverage" NAME="server Coverage Results" MODIFIED="1544444286599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/ChatChan$client.coverage" NAME="client Coverage Results" MODIFIED="1544444709194" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -80,8 +79,8 @@
       <file leaf-file-name="backend.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="182" column="43" selection-start-line="182" selection-start-column="43" selection-end-line="182" selection-end-column="43" />
+            <state relative-caret-position="-1139">
+              <caret line="226" column="52" selection-start-line="226" selection-start-column="52" selection-end-line="226" selection-end-column="52" />
               <folding>
                 <element signature="e#126#145#0" expanded="true" />
               </folding>
@@ -750,8 +749,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="182" column="43" selection-start-line="182" selection-start-column="43" selection-end-line="182" selection-end-column="43" />
+        <state relative-caret-position="-1139">
+          <caret line="226" column="52" selection-start-line="226" selection-start-column="52" selection-end-line="226" selection-end-column="52" />
           <folding>
             <element signature="e#126#145#0" expanded="true" />
           </folding>

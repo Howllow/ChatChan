@@ -213,6 +213,7 @@ def room_search():
     if request.method == 'GET':
         return render_template('find.html')
     elif request.method == 'POST':
+        db5 = pymysql.connect(**config)
         res = dict()
         data = request.get_json()
         typ = data['type']
@@ -220,10 +221,10 @@ def room_search():
         prefix = '[G]'
         res['response_code'] = 1
         if typ == 'room':
-            res['roomlist'] = find_room(prefix + keyword, db)
+            res['roomlist'] = find_room(prefix + keyword, db5)
             res['response_code'] = 0
         else:
-            res['userlist'] = find_name(keyword, db)
+            res['userlist'] = find_name(keyword, db5)
             res['response_code'] = 0
 
         return json.dumps(res)
