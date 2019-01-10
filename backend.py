@@ -24,6 +24,8 @@ app.config['SECRET_KEY'] = 'chatchan'
 
 password = ""
 db = pymysql.connect(**config)
+db1 = pymysql.connect(**config)
+db2 = pymysql.connect(**config)
 
 
 @app.route('/')
@@ -87,7 +89,6 @@ def login():
 @fl.login_required
 def home():
     if request.method == 'GET':
-        print(fl.current_user.username)
         return render_template('home.html')
 
 
@@ -97,7 +98,7 @@ def get_msg():
     data = request.get_json()
     res = dict()
     data['room_name'] = data.pop('roomname')
-    res['msg_list'] = get_messages_from_room_name(data, db)
+    res['msglist'] = get_messages_from_room_name(data, db2)
     res['response_code'] = 0
     return json.dumps(res)
 
@@ -176,7 +177,7 @@ def recent_room():
         data = request.get_json()
         usrname = data['username']
         print(usrname)
-        lst = get_room_by_name(usrname, db)
+        lst = get_room_by_name(usrname, db1)
         print(lst)
         lst = [[a, b] for (a, b) in lst]
         for ls in lst:
@@ -282,8 +283,10 @@ def join_room():
 @fl.login_required
 def send_msg():
     data = request.get_json()
-    data['account'] = fl.current_user.username
+    data['account'] = data.pop('username')
     data['message'] = data.pop('msg')
+    data['room_name'] = data.pop('roomname')
+    print(data)
     res = dict()
     suc = send_message(data, db)
     if suc == 'success':
