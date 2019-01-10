@@ -28,7 +28,7 @@ db = pymysql.connect(**config)
 
 @app.route('/')
 def homepage():
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -91,7 +91,7 @@ def home():
         return render_template('home.html')
 
 
-@app.route('/room/msg', methods=['GET'])
+@app.route('/room/msg', methods=['GET', 'POST'])
 @fl.login_required
 def get_msg():
     data = request.get_json()
@@ -129,7 +129,7 @@ def recent_room():
         res = dict()
         data = request.get_json()
         usrname = data['username']
-        lst = get_room_by_name(usrname)
+        lst = get_room_by_name(usrname, db)
         res['roomlist'] = lst
         res['response_code'] = 0
         return json.dumps(res)
@@ -200,6 +200,19 @@ def leave_room():
     res = dict()
     res['response_code'] = 1
     flag = exit_chatroom(data, db)
+    if flag == 'success':
+        res['response_code'] = 0
+    return json.dumps(res)
+
+
+@app.route('/room/join', methods=['POST'])
+@fl.login_required
+def join_room():
+    data = request.get_json()
+    data['account'] = data.pop('username')
+    flag = enter_chatroom(data, db)
+    res = dict()
+    res['response_code'] = 1
     if flag == 'success':
         res['response_code'] = 0
     return json.dumps(res)
