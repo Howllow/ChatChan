@@ -238,7 +238,8 @@
                                     var old_room_name = room_item.getAttribute("id");
                                     //console.log(old_room_name);
                                     if(old_room_name == room_name){
-                                        room_item.find(".glyphicon-bell").css("visibility","visible");
+                                        var bell = room_item.getElementsByClassName("glyphicon-bell");
+                                        bell[0].style.visibility = "visible";
                                         break;
                                     }
                                 }
@@ -251,7 +252,8 @@
                             room.setAttribute("id",room_name);
                             room.innerHTML=room_name + 
                                 "<span class='glyphicon glyphicon-bell'></span>";
-                            room.find(".glyphicon-bell").css("visibility","visible")
+                            var bell = room.getElementsByClassName("glyphicon-bell");
+                            bell[0].style.visibility = "visible";
                             $("#room-list").append(room);
                         }
                     }
