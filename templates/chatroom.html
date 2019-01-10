@@ -101,6 +101,7 @@
     $(document).ready(function(){
         $("#leave").click(function(){
             var room_name = $(this).parent().attr("id");
+            //alert(room_name);
             $.ajax({
                 type: 'POST',
                 url: 'http://localhost:5000/room/leave',

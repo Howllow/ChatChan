@@ -132,11 +132,18 @@
     var last_room_func=-1;
     var user="{{current_user.username}}";
     $(document).ready(function(){
+        /*
+        var room = document.createElement('a');
+        room.setAttribute("class","list-group-item");
+        room.setAttribute("href","#");
+        room.setAttribute("id","123_czy")
+        room.innerHTML = "123&czy" +
+            "<span class='glyphicon glyphicon-bell'></span>";
+        $("#room-list").append(room);
+        var room_old = $("#room-list").find("#123_czy");
+        */
         setInterval("check_update()",1000);
-        
-        
         //get roomlist
-        
         $.ajax({
             type: 'POST',
             url: 'http://localhost:5000/user/roomlist',
@@ -151,11 +158,39 @@
                         var room = document.createElement('a');
                         room.setAttribute("class","list-group-item");
                         room.setAttribute("href","#");
-                        room.setAttribute("id",roomlist[i][0])
+                        roomid = roomlist[i][0];
+                        room.setAttribute("id",roomid)
                         room.innerHTML = roomlist[i][0] +
                             "<span class='glyphicon glyphicon-bell'></span>";
                         $("#room-list").append(room);
                     }
+                    // if click the room, we should start pulling msg
+                    $(".list-group-item").click(function(){
+                        console.log("s");
+                        if(last_room_func != -1){
+                            clearInterval(last_room_func); // stop other room pulling
+                        }
+                        
+                        var room_name = this.text;
+                        $(this).siblings().removeClass("active");
+                        $(this).addClass("active");
+                        $(this).find(".glyphicon-bell").css("visibility","hidden")
+
+                        $(".chat-panel").css("visibility","visible")
+                        $(".room-info").text(room_name)
+                        $(".room-msg").empty();
+                        //pretend to get room msg
+                        var msglist=['str1','str2','str3'];
+                        for(var i=0; i<msglist.length;i++){
+                            var msg=document.createElement("p");
+                            msg.innerText=msglist[i];
+                            msg.setAttribute("class","my-msg");
+                            $(".room-msg").append(msg);
+                        }
+                        $(".room-msg").scrollTop($(".room-msg").height());
+                        last_room_func = setInterval(get_room_msg,1000,room_name);
+                    });
+        
                 }
                 else {
                     alert('roomlist error');
@@ -163,42 +198,15 @@
             }
         })
         
-        // if click the room, we should start pulling msg
-        $(".list-group-item").click(function(){
-            if(last_room_func != -1){
-                clearInterval(last_room_func); // stop other room pulling
-            }
-            var room_name = this.text;
-            $(this).siblings().removeClass("active");
-            $(this).addClass("active");
-            $(this).find(".glyphicon-bell").css("visibility","hidden")
-
-            $(".chat-panel").css("visibility","visible")
-            $(".room-info").text(room_name)
-            $(".room-msg").empty();
-            //pretend to get room msg
-            var msglist=['str1','str2','str3'];
-            for(var i=0; i<msglist.length;i++){
-                var msg=document.createElement("p");
-                msg.innerText=msglist[i];
-                msg.setAttribute("class","my-msg");
-                $(".room-msg").append(msg);
-            }
-            $(".room-msg").scrollTop($(".room-msg").height());
-            last_room_func = setInterval(get_room_msg,1000,room_name);
-        });
-        
         // if jump from other pages and need to highlight a specific room
         var Request = new Object();
         Request = GetRequest(); 
         var visit_room;
         visit_room = Request["room"];
-        //alert(visit_room);
         $("#"+visit_room).click();
     });
 
     function check_update(){
-        //$(".glyphicon-bell").css("visibility","visible")
         $.ajax({
             type: 'POST',
             url: 'http://localhost:5000/user/roomlist',
@@ -211,18 +219,17 @@
                     var new_roomlist = res['roomlist'];
                     for(var i = 0; i < new_roomlist.length; i++){
                         var room_name = new_roomlist[i][0];
-                        var find_param = '#' + room_name;
-                        var room_old = $("#room-list").find(find_param);
-                        if(room_old.length > 0){ // the room already exists, check if it has new msg
-                            var new_update_time = new_roomlist[i][1];
-                            var old_update_time;
-                            // to get the old_update_time
-                            for(var i = 0;i < roomlist.length;i++){
-                                if(roomlist[i][0] == room_name){
-                                    old_update_time = roomlist[i][1];
-                                    break;
-                                }
+                        var old_update_time;
+                        var room_exist = false;
+                        for(var i = 0;i < roomlist.length;i++){
+                            if(roomlist[i][0] == room_name){
+                                old_update_time = roomlist[i][1];
+                                room_exist = true;
+                                break;
                             }
+                        }
+                        if(room_exist){ // the room already exists, check if it has new msg
+                            var new_update_time = new_roomlist[i][1];
                             if(new_update_time != old_update_time){
                                 room_old.find(".glyphicon-bell").css("visibility","visible")
                             }
@@ -262,21 +269,23 @@
                     $(".room-info").text(room_name)
                     $(".room-msg").empty();
                     var msglist=res['msglist'];
-                    for(var i=0; i<msglist.length;i++){
-                        var msg=document.createElement("p");
-                        var msg_account=msglist[i]['account']
-                        if(msg_account == user){ // my own msg
-                            msg.setAttribute("class","my-msg");
-                            msg.innerText=msglist[i]['msg']+":"+user;
+                    if(msglist){
+                        for(var i=0; i<msglist.length;i++){
+                            var msg=document.createElement("p");
+                            var msg_account=msglist[i]['account']
+                            if(msg_account == user){ // my own msg
+                                msg.setAttribute("class","my-msg");
+                                msg.innerText=msglist[i]['msg']+":"+user;
+                            }
+                            else{ // others' msg
+                                msg.setAttribute("class","others-msg")
+                                msg.innerText=msg_account+":"+msglist[i]['msg'];
+                            }
+                            $(".room-msg").append(msg);
                         }
-                        else{ // others' msg
-                            msg.setAttribute("class","others-msg")
-                            msg.innerText=msg_account+":"+msglist[i]['msg'];
-                        }
-                        $(".room-msg").append(msg);
+                        // set scroll to bottom
+                        $(".room-msg").scrollTop($(".room-msg").height());
                     }
-                    // set scroll to bottom
-                    $(".room-msg").scrollTop($(".room-msg").height());
                 }
                 else {
                     alert('msg error');
