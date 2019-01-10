@@ -84,7 +84,7 @@
     <div class="sidebar col-md-2">
         <div class="list-group">
             <a href="/room/myroom" class="list-group-item">my room</a>
-            <a href="/room/new" class="list-group-item active">new room</a>
+            <a href="/room/newroom" class="list-group-item active">new room</a>
         </div>
     </div>
     <div class="container-main">   
@@ -101,20 +101,21 @@
     </div>
 </body>
 <script>
+    var user = "{{ current_user.username }}"
     $("#submit").click(function(){
         var room_name = $("#name").val();
         alert(room_name);
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/room/new',
+            url: 'http://localhost:5000/room/create_room',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: JSON.stringify({ roomname: room_name }),
+            data: JSON.stringify({ username: user, roomname: room_name }),
             success: function (res) {
                 console.log(res);
                 if (res['response_code'] == 0) {
                     alert("Successfully create a room!");
-                    window.location.href = 'room/new'
+                    window.location.href = 'room/newroom'
                 }
                 else if(res['response_code'] == 1) {
                     alert("Room name has already been used!!");
