@@ -1,330 +1,131 @@
-# ChatChan(Updated Dec/29)
-a naive online chat program(python)
+## 聊天软件项目报告
 
+#### 金庆哲 1600012896 李慕宇 1600012728
 
+#### 陈正胤   谢锦汉
 
-### Functions to be implemented
 
-* Registration
-* Login
-* Make a group
-* Dissolve a group
-* Enter a group
-* Leave a group
-* Chat in the group
-* Chat privately
-* See group member
-* See online users
-* Logout
 
+### 项目构成及分工
 
+项目主要由前端的html,js,css和后端的mysql数据库,flask框架代码等构成
 
-### API
+前端任务由陈正胤完成,数据库由李慕宇完成,后端的其他部分由金庆哲完成
 
-* Get recent chatroom
 
-operation：room/recent
 
-method: post
+### 聊天软件功能
 
-send: 
+本项目实现了以下功能:
 
-```
-userid: number
-```
+* 用户的注册与登录
+* 聊天室的创建
+* 多人聊天
+* 私人聊天
+* 根据关键字寻找用户或聊天室(并加入聊天室或是开始私聊)
+* 修改用户密码
+* 新消息提醒,聊天列表的随时更新
+* 查看用户所在的所有聊天室(不包括私聊),并可以选择离开
+* 用户的登出
 
-response:
 
-```
-response_code: number
-roomlist: list
-```
 
-* Get chatroom message list
+### 功能实现(技术路线)
 
-operation: room/msg
+主要介绍各种功能实现的思路,并没有包括所有细节.前端还包括了页面的外观设计以及各种点击操作,跳转操作等.数据库的具体构建也不再赘述,这里以叙述三者间交互逻辑为主.更细节的东西在代码中有所体现.
 
-method: post
+#### 注册
 
-send:
+* 前端:检查两次输入密码是否一致,发送相应的ajax请求到特定url上,ajax内容包括用户名,密码等
+* 服务器:接收前端发送数据,调用数据库函数查询,得到返回结果并返回给前端.返回值代表:用户名已存在;注册成功;失败
+* 数据库:检查用户名是否已经存在,若注册成功就将用户信息登录到数据库里
 
-```
-roomid: number
-```
 
-response:
 
-```
-response_code: number
-msg_list: list
-```
+#### 登入
 
-* Get chatroom list
+* 前端:发送ajax请求到特定url,包括用户名和密码
+* 服务器:接收前端发送数据,调用数据库函数查询,得到返回结果并返回给前端.返回值代表:用户名不存在;密码不正确;成功.如果注册成功,使用flask-login的登入操作来标记连接属于哪个用户.
+* 数据库:检查用户名是否存在,以及密码是否正确,并返回给服务器
 
-operation: user/roomlist
 
-method: post
 
-send:
+#### 登出
 
-```
-userid: number
-type: number(0 for created room/1 for joined room)
-```
+* 前端:发送请求给服务器
+* 服务器:接收前端发送消息,使用flask-login的logout操作进行登出,并跳转到登陆界面
 
-response:
 
-```
-response_code: number
-roomlist: list
-```
 
-* Create a chatroom
+#### 修改密码
 
-operation: room/new
+* 前端:发送用户名,旧密码,新密码给服务器
+* 服务器:接收数据,传给数据库,返回一个结果给前端
+* 数据库:检查用户名和旧密码是否匹配.如果匹配,修改用户的密码.返回一个结果给服务器
 
-method: post
 
-send:
 
-```
-roomname: string
-room_ownerid: number
-description: string
-```
+#### 在聊天室中发送消息
 
-response:
+* 前端:发送消息内容和所在聊天室给服务器
+* 服务器:将用户名和消息内容以及聊天室名称发给数据库,返回一个结果给前端
+* 数据库:在对应聊天室中构建一条消息,返回是否成功给服务器
 
-```
-response_code: number
-roomid: number
-```
 
-* Search for chatroom
 
-operation: room/search
+#### 查找聊天室或用户
 
-method: post
+- 前端:发送查询请求到后端,内容包括关键字
+- 服务器:接收关键字,将关键字传给数据库,并向前端返回结果(一个list)
 
-send:
+- 数据库:根据关键字查找用户或聊天室,返回给后端服务器
 
-```
-keyword: string
-```
 
-response:
 
-```
-response_code: number
-roomlist: list
-```
+#### 加入聊天室
 
-* Change user profile
+- 前端:发送聊天室名称给服务器,如果加入成功,跳转到聊天页面
+- 服务器:将聊天室名称和用户id一起发给数据库,并向前端返回一个结果
+- 数据库:查看聊天室是否存在,该用户是否已经在该聊天室中,返回相应结果给服务器
 
-operation: user/profile
 
-method: post
 
-send:
+#### 创建聊天室
 
-```
-gender: number
-(others)
-```
+* 前端:发送创建请求到后端,内容包括聊天室名称
+* 服务器:接收聊天室名称,并将加入了标记聊天室类型的前缀的聊天室名称和创建者id一起送给数据库,请求创建.如果创建成功,让创建者进入聊天室并在聊天室中发送第一条消息
+* 数据库:查询聊天室是否已经存在.返回:已存在;创建成功;失败
 
-response:
 
-```
-response_code: number
-```
 
-* Change password
+#### 离开聊天室
 
-operation: user/setting
+* 前端:发送离开请求给后端,内容包括用户名和房间名
+* 服务器:根据得到的数据调用函数访问数据库,返回操作结果给前端
+* 数据库:将用户从房间中移除,返回操作结果给服务器
 
-method: post
 
-send:
 
-```
-username: string
-old_password: string
-new_password: string
-```
+#### 开始私聊
 
-response:
+* 前端:通过当前用户名和私聊对象用户名建立一个房间名.将这个房间名和私聊对象用户名一起发给服务器
+* 服务器:调用创建聊天室操作,创建这个聊天室.如果创建成功,将两个用户都加入聊天室,并让发起者在聊天室中说第一句话
 
-```
-response_code: number
-```
 
-* login
 
-operation: login
+#### 新消息提醒,聊天列表更新
 
-method: post
+* 前端:每隔一段时间发送一个ajax请求给服务器,请求得到当前该用户所在的所有房间以及房间最后一条消息的产生时间.如果产生时间和之前保存的值不一样,说明这个房间有新消息,用一个图标(小铃铛)来标记该房间.同时不断更新页面上显示的房间列表,这样房间列表会及时更新(他人和自己私聊时会多出一个房间,以让用户注意到)
+* 服务器:接收前端请求,调用函数访问数据库,返回一个list给前端
+* 数据库:根据服务器发来的用户名查询该用户所在的所有房间,以及这些房间最后消息的产生时间,返回给服务器.
 
-send:
 
-```
-username: string
-password: string
-```
 
-response:
+#### 聊天室消息显示
 
-```
-response_code: number
-```
+* 前端:显示保存的当前房间的消息内容.如果发现当前房间消息有更新(根据前面的新消息查询逻辑),就发送一个请求给服务器,拿到新的消息列表并显示.
+* 服务器:接收前端请求,调用函数访问数据库,返回消息列表给前端
+* 数据库:根据服务器发来的房间名来查询该房间的所有消息,返回给服务器
 
-* register
 
-operation: register
 
-method: post
-
-send:
-
-```
-username: string
-password: string
-```
-
-response:
-
-```
-response_code: number
-```
-
-* logout
-
-depends on user management?
-
-### Database Functions（mydb.py）
-
-* check_reglog(json)
-
-  * input:
-    ~~~ 
-    username:string
-    password:string
-    opcode:0(login)/register(1)
-    ~~~
-
-  * function: 
-    - check if username has existed(login)
-    - check if user is existed, then check the password(register)
-
-  * output: 
-
-    ~~~
-    response_code:0(failed)/1
-    ~~~
-
-* create_room(json)
-
-  * input:
-    ~~~ 
-    roomname:string
-    room_owner:string
-    description:string
-    ~~~
-
-  * function:
-    * check if room has existed, if not, create it and record the room info
-
-  * output: 
-
-    ~~~
-    response_code:0/1
-    ~~~
-
-* room_lst(json)
-
-  * input:
-
-    ~~~ 
-    username:string
-    type:0/1
-    ~~~
-
-  * function:
-
-    * opcode = 1: return the rooms user is in
-    * opcode = 0: only return the rooms user created
-
-  * output:
-
-    ~~~
-    response_code:0/1
-    roomlist:list
-    ~~~
-* search_room(json)
-  * input:
-    ~~~
-    key_word:string
-    ~~~
-  * function:
-    * find chatrooms using the given keyword
-  * output:
-    ~~~
-    response_code:0/1
-    roomlist:list
-    ~~~
- 
-* change_pwd(json)
-
-  * input:
-
-    ~~~
-    username:string
-    old_password:string
-    new_password:string
-    ~~~
-
-  * function:
-
-    * check if old_password is correct
-    * then change it
-
-  * output:
-
-    ~~~
-    response_code:0/1
-    ~~~
-
-* msg_lst(json)
-
-  * input:
-
-    ~~~ 
-    roomname:string
-    ~~~
-
-  * function:
-
-    * return all messages in this room
-    * meanwhile update "message_num" in all rooms, and see if there are changes
-
-  * output:
-
-    ~~~
-    response_code:0/1
-    msg_list:list
-    change_list:list(contents are (roomname, newmsg_num))
-    ~~~
-* change_profile(json)
-  * input:
-    ~~~
-    username:string
-    category:string(e.g. gender)
-    value:string
-    ~~~
-  * function:
-    * change user's profile.
-  * output:
-    ~~~
-    response_code:0/1
-    ~~~
-
-  ​
