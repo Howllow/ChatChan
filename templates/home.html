@@ -34,6 +34,7 @@
             border-radius: 5px;
             box-shadow: 1px 1px 1px gray;
             height: 100%;
+            background-color: snow;
         }
         .chat-panel{
             height: 100%;
@@ -48,20 +49,41 @@
             height: 10%;    
             border: 1px solid;
             border-color: lightgray;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: skyblue;
+            background-color: snow;
+        }
+        .room-msg-bg{
+            height: 70%;
+            border: 1px solid;
+            border-color: lightgray;
+            background-color: snow;
         }
         .room-msg{
             display: flex;
             flex-direction: column;
-            height: 70%;
-            border: 1px solid;
-            border-color: lightgray;
+            height: 100%;
             overflow-y: scroll;
+            
         }
         .my-msg{
             align-self: flex-end;
+            margin-right: 1px;
+            font-size: 18px;
+            border: 5px solid skyblue;
+            border-radius: 5px;
+            background-color: skyblue; 
+            
         }
         .others-msg{
             align-self: flex-start;
+            margin-left: 1px;
+            font-size: 18px;
+            border: 5px solid lightblue;
+            border-radius: 5px;
+            background-color: lightblue; 
         }
         .room-inputbox{
             height: 20%;
@@ -69,6 +91,7 @@
             border-color: lightgray;
             overflow-y: scroll;
         }
+        
         .glyphicon-bell{
             visibility: visible;
             float: right;
@@ -113,14 +136,16 @@
         <div class="room-info">
             room info
         </div>
-        <div class="room-msg">
-            <p class="my-msg">mymsg</p>
-            <p class="others-msg">others</p>
+        <div class="room-msg-bg">
+            <div class="room-msg">
+                <p class="my-msg">mymsg</p>
+                <p class="others-msg">others</p>
+            </div>
         </div>
         <div class="room-inputbox">
             <form role="form">
                 <div class="form-group">
-                    <textarea class="form-control" rows="5" placeholder="please input your message"></textarea>
+                    <textarea class="form-control" rows="5" placeholder="please input your message" style="background-color:snow; "></textarea>
                 </div>
             </form>
         </div>
@@ -167,26 +192,7 @@
                     }
 
                     // if click the room, we should start pulling msg
-                    $(".list-group-item").click(function(){
-                        $(".room-msg").empty();
-                        //console.log("last_room_func=",last_room_func);
-                        if(last_room_func != -1){
-                            //console.log("clear");
-                            clearInterval(last_room_func); // stop other room pulling
-                        }
-                        
-                        var room_name = this.text;
-                        $(this).siblings().removeClass("active");
-                        $(this).addClass("active");
-                        $(this).find(".glyphicon-bell").css("visibility","hidden")
-
-                        $(".chat-panel").css("visibility","visible")
-                        $(".room-info").text(room_name)
-                        $(".room-msg").empty();
-                        
-                        get_room_msg(room_name);
-                        last_room_func = setInterval(get_room_msg,1000,room_name);
-                    });
+                    $(".list-group-item").click(select_room);
                     
                     // if visit the page with a param, deal with it 
                     enterPage();
@@ -221,9 +227,10 @@
                     }
                     for(var i = 0; i < new_roomlist.length; i++){
                         var room_name = new_roomlist[i][0];
+                        /*
                         if(room_name == selected_room){
                             continue;
-                        }
+                        }*/
                         var old_update_time;
                         var room_exist = false;
                         for(var i = 0;i < roomlist.length;i++){
@@ -235,16 +242,22 @@
                         }
                         if(room_exist){ // the room already exists, check if it has new msg
                             var new_update_time = new_roomlist[i][1];
-                            if(new_update_time != old_update_time){
-                                var rooms = $("#room-list").children();
-                                for(var i = 0; i < rooms.length; i++){
-                                    var room_item = rooms[i];
-                                    var old_room_name = room_item.getAttribute("id");
-                                    //console.log(old_room_name);
-                                    if(old_room_name == room_name){
-                                        var bell = room_item.getElementsByClassName("glyphicon-bell");
-                                        bell[0].style.visibility = "visible";
-                                        break;
+                            if(new_update_time != old_update_time){ // has new message 
+                                console.log(selected_room, room_name);
+                                if(room_name == selected_room){   // if it is the selected room, display new msg
+                                    get_room_msg(room_name);
+                                }
+                                else{   //otherwise, display the notice bell
+                                    var rooms = $("#room-list").children();
+                                    for(var i = 0; i < rooms.length; i++){
+                                        var room_item = rooms[i];
+                                        var old_room_name = room_item.getAttribute("id");
+                                        //console.log(old_room_name);
+                                        if(old_room_name == room_name){
+                                            var bell = room_item.getElementsByClassName("glyphicon-bell");
+                                            bell[0].style.visibility = "visible";
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -262,23 +275,7 @@
                         }
                     }
                     // load click event
-                    $(".list-group-item").click(function(){
-                        if(last_room_func != -1){
-                            clearInterval(last_room_func); // stop other room pulling
-                        }
-                        
-                        var room_name = this.text;
-                        $(this).siblings().removeClass("active");
-                        $(this).addClass("active");
-                        $(this).find(".glyphicon-bell").css("visibility","hidden")
-
-                        $(".chat-panel").css("visibility","visible")
-                        $(".room-info").text(room_name)
-                        $(".room-msg").empty();
-                        
-                        get_room_msg(room_name);
-                        last_room_func = setInterval(get_room_msg,1000,room_name);
-                    });
+                    $(".list-group-item").click(select_room);
                     roomlist=new_roomlist;
                 }
                 else {
@@ -288,6 +285,7 @@
         })
     }
 
+    // fetch message and display
     function get_room_msg(room_name){
         //alert(room_name)
         $.ajax({
@@ -328,6 +326,7 @@
         })
     }
     
+    // send message
     $('.room-inputbox').keydown(function(e) {
         
         if(e.keyCode=='13') {
@@ -396,5 +395,25 @@
         } 
         return theRequest; 
     } 
+
+    // click the room item
+    function select_room(){
+        $(".room-msg").empty();/*
+        if(last_room_func != -1){
+            clearInterval(last_room_func); // stop other room pulling
+        }*/
+        
+        var room_name = this.text;
+        $(this).siblings().removeClass("active");
+        $(this).addClass("active");
+        $(this).find(".glyphicon-bell").css("visibility","hidden")
+
+        $(".chat-panel").css("visibility","visible")
+        $(".room-info").text(room_name)
+        $(".room-msg").empty();
+        
+        get_room_msg(room_name);
+        //last_room_func = setInterval(get_room_msg,1000,room_name);
+    }
 </script>
 </html>
